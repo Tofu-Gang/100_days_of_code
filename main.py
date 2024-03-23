@@ -1,6 +1,11 @@
 from os import getcwd, sep, listdir
 from signal import signal, SIGINT
 from types import FrameType
+from typing import Tuple
+
+########################################################################################################################
+
+EXIT_MESSAGE = "Exiting..."
 
 
 ########################################################################################################################
@@ -15,8 +20,42 @@ def _handler_sigint(signum: int, frame: FrameType) -> None:
     and then the program is terminated with return code 1.
     """
 
-    print("Ctrl+C was pressed! Exiting...")
+    print("Ctrl+C was pressed!", EXIT_MESSAGE)
     exit(1)
+
+
+########################################################################################################################
+
+def _get_src_directories() -> Tuple[str, ...]:
+    """
+    Get a list of all directories in the src/ folder; there is always one directory for each challenge.
+
+    :return: List of directories names in the src/ folder
+    """
+
+    cwd = getcwd()
+    return tuple(listdir(cwd + sep + "src"))
+
+
+########################################################################################################################
+
+def _get_implemented_days() -> Tuple[()] | Tuple[int, ...]:
+    """
+    :return: tuple of numbers of days for which a challenge is already implemented
+    """
+
+    return tuple(map(lambda dir_name: int(dir_name[4:7]), _get_src_directories()))
+
+
+########################################################################################################################
+
+def _is_day_implemented(day: int) -> bool:
+    """
+    :param day: day/challenge number
+    :return: True if this day's challenge is already implemented, False otherwise
+    """
+
+    return day in _get_implemented_days()
 
 
 ########################################################################################################################
@@ -35,18 +74,30 @@ def _get_day_number() -> str:
 
         # Valid day number must only use numerals [0-9] and nothing else.
         # Furthermore, the day must be between 1 and 100 (both inclusive).
-        if day.isnumeric() and 1 <= int(day) <= 100:
-            break
-        else:
-            # the day number isn't valid, inform the user why
-            if not day.isnumeric():
-                print("The day number can only contain numerals [0-9] and no other characters.")
-            elif int(day) < 1 or int(day) > 100:
-                print("The day number can only be between 1 and 100 (both inclusive).")
-
+        try:
+            assert day.isnumeric()
+        except AssertionError:
+            print("The day number can only contain numerals [0-9] and no other characters.")
+            continue
+        try:
+            assert 1 <= int(day) <= 100
+        except AssertionError:
+            print("The day number can only be between 1 and 100 (both inclusive).")
+            continue
+        try:
+            assert _is_day_implemented(int(day))
+        except AssertionError:
+            if len(_get_implemented_days()) > 0:
+                print("This challenge is not yet implemented. Implemented ones are:")
+                print(", ".join(map(lambda day_number: str(day_number), _get_implemented_days())))
+                continue
+            else:
+                print("No challenges implemented.", EXIT_MESSAGE)
+                exit(0)
+        # the day number is definitely valid and the challenge is implemented, break the loop
+        break
     # prefix the day number with zeroes, so it is always exactly three characters longs
-    day = (3 - len(day)) * "0" + day
-    return day
+    return (3 - len(day)) * "0" + day
 
 
 ########################################################################################################################
@@ -61,9 +112,8 @@ def _run_program() -> None:
     of the day's challenge.
     """
 
-    # get a list of all directories in the src/ folder; there is always one directory for each challenge.
-    cwd = getcwd()
-    directories = listdir(cwd + sep + "src")
+    # get a list of all directories names in the src/ folder
+    directories = _get_src_directories()
     # get a day number from the user and prefix this string with "day_", so we have the first part of the requested
     # challenge directory name "day_XXX", where XXX is the day number chosen by the user
     day = "day_" + _get_day_number()
