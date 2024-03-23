@@ -1,4 +1,22 @@
 from os import getcwd, sep, listdir
+from signal import signal, SIGINT
+from types import FrameType
+
+
+########################################################################################################################
+
+def _handler_sigint(signum: int, frame: FrameType) -> None:
+    """
+    :param signum: unused
+    :param frame: unused
+
+    A very simple function which is called when Ctrl+C is pressed. It overrides standard behavior, which is sending a
+    SIGINT signal followed by throwing a KeyboardInterrupt error. Instead, an information about the situation is printed
+    and then the program is terminated with return code 1.
+    """
+
+    print("Ctrl+C was pressed! Exiting...")
+    exit(1)
 
 
 ########################################################################################################################
@@ -67,6 +85,8 @@ if __name__ == "__main__":
     Show the welcome message, then request a challenge day number and call the challenge "main" function.
     """
 
+    # register the SIGINT signal handler which overrides the default behavior (throwing a KeyboardInterrupt error)
+    signal(SIGINT, _handler_sigint)
     print("100 Days of Code")
     print("The Complete Python Pro Bootcamp")
     # get the desired challenge day number from the user, dynamically import the needed module and
