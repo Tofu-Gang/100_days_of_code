@@ -1,5 +1,5 @@
 import unittest
-from os import getcwd, sep, walk
+from os import getcwd, sep, walk, chdir
 from os.path import basename, normpath
 from typing import Tuple
 
@@ -20,6 +20,9 @@ def _get_src_directories_for_tests() -> Tuple[str, ...]:
 
     # collect directories names in src folder
     directories = []
+    # save the original working directory, chdir changes are global
+    original_cwd = getcwd()
+    chdir("..")
 
     for root, dirs, _ in walk(getcwd() + sep + SRC_DIR_NAME):
         for name in dirs:
@@ -27,21 +30,10 @@ def _get_src_directories_for_tests() -> Tuple[str, ...]:
                 # collect directory name only if it is in the src folder
                 directories.append(name)
 
+    # go back to the original working directory
+    chdir(original_cwd)
     # make the list a sorted tuple
     return tuple(sorted(directories))
-
-
-########################################################################################################################
-
-def _get_implemented_days_for_tests() -> Tuple[int, ...]:
-    """
-    Get the result of the function _get_src_directories_for_tests() from this module and use
-    utils.extract_day_number_from_dir_name() as the map function to extract just the day numbers.
-
-    :return: a sorted tuple of the day numbers of the implemented challenges
-    """
-
-    return tuple(sorted(map(extract_day_number_from_dir_name, _get_src_directories_for_tests())))
 
 
 ########################################################################################################################

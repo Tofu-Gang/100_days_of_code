@@ -1,4 +1,5 @@
-from os import getcwd, sep, listdir
+from os import sep, listdir
+from os.path import dirname, realpath
 from typing import Tuple, Union
 
 from constants import EXIT_MESSAGE, SRC_DIR_NAME
@@ -36,7 +37,7 @@ def _get_src_directories() -> Tuple[str, ...]:
     :return: list of directories names in the src/ folder
     """
 
-    return tuple(listdir(getcwd() + sep + SRC_DIR_NAME))
+    return tuple(listdir(dirname(realpath(__file__)) + sep + SRC_DIR_NAME))
 
 
 ########################################################################################################################
