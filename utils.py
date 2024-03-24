@@ -1,7 +1,30 @@
 from os import getcwd, sep, listdir
-from typing import Tuple
+from typing import Tuple, Union
 
-from constants import EXIT_MESSAGE
+from constants import EXIT_MESSAGE, SRC_DIR_NAME
+
+
+########################################################################################################################
+
+def extract_day_number_from_dir_name(dir_name: str) -> int:
+    """
+    :param dir_name: name of a directory in the src folder
+    :return: extracted slice from the directory name between 4 and 6 (both inclusive), converted to int
+    """
+
+    day_number = dir_name[4:7]
+    return int(day_number)
+
+
+########################################################################################################################
+
+def prefix_day_number_with_zeroes(day_number: str) -> str:
+    """
+    :param day_number: a string of a day number (no validations are in place)
+    :return: string of the input day_number prefixed with zeroes so the result has length of 3 or more
+    """
+
+    return (3 - len(day_number)) * "0" + day_number
 
 
 ########################################################################################################################
@@ -10,32 +33,20 @@ def _get_src_directories() -> Tuple[str, ...]:
     """
     Get a list of all directories in the src/ folder; there is always one directory for each challenge.
 
-    :return: List of directories names in the src/ folder
+    :return: list of directories names in the src/ folder
     """
 
-    cwd = getcwd()
-    return tuple(listdir(cwd + sep + "src"))
+    return tuple(listdir(getcwd() + sep + SRC_DIR_NAME))
 
 
 ########################################################################################################################
 
-def _get_implemented_days() -> Tuple[()] | Tuple[int, ...]:
+def _get_implemented_days() -> Union[Tuple[()], Tuple[int, ...]]:
     """
     :return: tuple of numbers of days for which a challenge is already implemented
     """
 
-    return tuple(map(lambda dir_name: int(dir_name[4:7]), _get_src_directories()))
-
-
-########################################################################################################################
-
-def _is_day_implemented(day: int) -> bool:
-    """
-    :param day: day/challenge number
-    :return: True if this day's challenge is already implemented, False otherwise
-    """
-
-    return day in _get_implemented_days()
+    return tuple(map(extract_day_number_from_dir_name, _get_src_directories()))
 
 
 ########################################################################################################################
@@ -67,7 +78,7 @@ def _get_day_number() -> str:
             print("The day number can only be between 1 and 100 (both inclusive).")
             continue
         try:
-            assert _is_day_implemented(int(day))
+            assert int(day) in _get_implemented_days()
         except AssertionError:
             if len(_get_implemented_days()) > 0:
                 # there are some challenge(s) implemented, but this one is not
@@ -81,7 +92,7 @@ def _get_day_number() -> str:
         # the day number is definitely valid and the challenge is implemented, break the loop
         break
     # prefix the day number with zeroes, so it is always exactly three characters longs
-    return (3 - len(day)) * "0" + day
+    return prefix_day_number_with_zeroes(day)
 
 
 ########################################################################################################################
@@ -107,7 +118,7 @@ def run_program() -> None:
     # eight characters from the challenge directory name to get the name of the "main" module file of the challenge.
     filename = directory[8:]
     # dynamically import the "main" challenge module
-    module = __import__("src." + directory + "." + filename, fromlist=[""])
+    module = __import__(SRC_DIR_NAME + "." + directory + "." + filename, fromlist=[""])
     # call the "main" function of the challenge
     module.run_program()
 
