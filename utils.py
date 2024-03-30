@@ -1,8 +1,22 @@
 from os import sep, listdir
 from os.path import dirname, realpath
 from typing import Tuple, Union
+from math import floor
 
 from constants import EXIT_MESSAGE, SRC_DIR_NAME
+
+
+########################################################################################################################
+
+def round_up(number: float, decimals: int = 0) -> float:
+    """
+    :param number: a float number to round up
+    :param decimals: to how many spaces round up
+    :return: the number rounded up to a specified number of digits
+    """
+
+    multiplier = 10 ** decimals
+    return floor(number * multiplier + 0.5) / multiplier
 
 
 ########################################################################################################################
