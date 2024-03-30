@@ -4,7 +4,7 @@ from os.path import basename, normpath
 from typing import Tuple
 
 from utils import extract_day_number_from_dir_name, prefix_day_number_with_zeroes, _get_src_directories, \
-                   _get_implemented_days
+                   _get_implemented_days, round_up
 from constants import SRC_DIR_NAME
 
 
@@ -39,6 +39,19 @@ def _get_src_directories_for_tests() -> Tuple[str, ...]:
 ########################################################################################################################
 
 class TestUtils(unittest.TestCase):
+
+    def test_round_up(self) -> None:
+        """
+        Test rounding up to a specified number of digits.
+        """
+
+        number = 13.825
+        self.assertEqual(10, round_up(number, -1))
+        self.assertEqual(14, round_up(number))
+        self.assertEqual(13.8, round_up(number, 1))
+        self.assertEqual(13.83, round_up(number, 2))
+
+########################################################################################################################
 
     def test_extract_day_number_from_dir_name(self) -> None:
         """
