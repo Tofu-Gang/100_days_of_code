@@ -2,7 +2,9 @@
 
 def _cross_road() -> str:
     """
-    :return:
+    First challenge of the game.
+
+    :return: the direction in which the player continues
     """
 
     print("You're at a cross road. Where do you want to go?")
@@ -22,8 +24,9 @@ def _cross_road() -> str:
 
 def _lake() -> str:
     """
+    Second challenge of the game.
 
-    :return:
+    :return: the action which the player does next
     """
 
     print("You come to a lake. There is an island in the middle of the lake. What do you do?")
@@ -43,7 +46,9 @@ def _lake() -> str:
 
 def _island() -> str:
     """
+    Third challenge of the game.
 
+    :return: the door which the player opens
     """
 
     print("You arrive at the island unharmed. There is a house with 3 doors. One red, one yellow and one blue.")
@@ -65,7 +70,7 @@ def _island() -> str:
 
 def _print_treasure() -> None:
     """
-
+    Print ASCII art of a treasure chest.
     """
 
     print('''
@@ -96,7 +101,7 @@ ____/______/______/______/______/_____"=.o|o_.--""___/______/______/______/____
 
 def run_program() -> None:
     """
-    Collect both demanded user inputs and generate a possible band name from those inputs.
+    Play a little choose your adventure style game.
     """
 
     print("Welcome to Treasure Island.")
