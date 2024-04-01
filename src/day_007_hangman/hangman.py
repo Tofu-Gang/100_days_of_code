@@ -120,7 +120,8 @@ class Hangman:
 
     def __init__(self):
         """
-
+        Initialize the hangman game. Get a random word, set hangman stages counter to zero and make space for storing
+        already guessed letters.
         """
 
         self._stage = 0
@@ -142,7 +143,7 @@ class Hangman:
 
     def _print_word(self) -> None:
         """
-
+        Print the word; reveal correctly guessed letters.
         """
 
         print(" ".join(letter if letter in self._guessed_letters else "_" for letter in self._word))
@@ -151,7 +152,7 @@ class Hangman:
 
     def _print_already_guessed(self) -> None:
         """
-
+        Print already guessed letters.
         """
 
         print("You already guessed " + ", ".join(letter for letter in self._guessed_letters) + ".")
@@ -160,7 +161,7 @@ class Hangman:
 
     def _is_lost(self) -> bool:
         """
-        :return:
+        :return: True if the player lost, False otherwise
         """
 
         return self._stage == len(self.STAGES) - 1
@@ -169,7 +170,7 @@ class Hangman:
 
     def _is_win(self) -> bool:
         """
-        :return:
+        :return: True if the player won, False otherwise
         """
 
         return all(letter in self._guessed_letters for letter in self._word)
@@ -178,7 +179,7 @@ class Hangman:
 
     def play(self) -> None:
         """
-
+        Play the game of Hangman.
         """
 
         print(self.LOGO)
@@ -226,7 +227,7 @@ class Hangman:
 
 def run_program() -> None:
     """
-
+    Play the game of Hangman.
     """
 
     Hangman().play()
