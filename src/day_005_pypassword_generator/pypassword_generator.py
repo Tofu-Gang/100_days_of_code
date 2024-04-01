@@ -30,12 +30,31 @@ def run_program() -> None:
     """
 
     print("Welcome to the PyPassword Generator!")
-    print("How many letters would you like in your password?")
-    letters_count = int(input("> "))
-    print("How many numbers would you like?")
-    numbers_count = int(input("> "))
-    print("How many symbols would you like?")
-    symbols_count = int(input("> "))
+
+    while True:
+        print("How many letters would you like in your password?")
+        try:
+            letters_count = int(input("> "))
+            break
+        except ValueError:
+            print("Invalid value. Integer required.")
+
+    while True:
+        print("How many numbers would you like?")
+        try:
+            numbers_count = int(input("> "))
+            break
+        except ValueError:
+            print("Invalid value. Integer required.")
+
+    while True:
+        print("How many symbols would you like?")
+        try:
+            symbols_count = int(input("> "))
+            break
+        except ValueError:
+            print("Invalid value. Integer required.")
+
     password = _generate_password(letters_count, numbers_count, symbols_count)
     print("Here is your password: " + password)
 
