@@ -30,7 +30,7 @@ def _encode_dialogue() -> None:
     print("Type your message (only letters are encoded, the rest stays the same; will be converted to lower case):")
     message = input("> ")
     offset = _get_shift_number()
-    print("Here's the encoded result: " + _encode_message(message, offset))
+    print("Here's the encoded result: " + encode_message(message, offset))
 
 
 ########################################################################################################################
@@ -43,7 +43,7 @@ def _decode_dialogue() -> None:
     print("Type your message (only letters are decoded, the rest stays the same; will be converted to lower case):")
     message = input("> ")
     offset = _get_shift_number()
-    print("Here's the decoded result: " + _decode_message(message, offset))
+    print("Here's the decoded result: " + decode_message(message, offset))
 
 
 ########################################################################################################################
@@ -65,7 +65,7 @@ def _get_shift_number() -> int:
 
 ########################################################################################################################
 
-def _encode_message(message: str, offset: int) -> str:
+def encode_message(message: str, offset: int) -> str:
     """
     :param message: message to be decoded
     :param offset: shift number for the Caesar cipher
@@ -86,7 +86,7 @@ def _encode_message(message: str, offset: int) -> str:
 
 ########################################################################################################################
 
-def _decode_message(message: str, offset: int) -> str:
+def decode_message(message: str, offset: int) -> str:
     """
     :param message: message to be decoded
     :param offset: shift number for the Caesar cipher
