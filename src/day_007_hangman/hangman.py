@@ -3,7 +3,8 @@ from random import choice
 
 
 class Hangman:
-    DICT_SITE = "https://www.mit.edu/~ecprice/wordlist.10000"
+    DICT_SITE_EN = "https://www.mit.edu/~ecprice/wordlist.10000"
+    DICT_SITE_FI = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2016/fi/fi_50k.txt"
 
     LOGO = """ 
  _                                             
@@ -125,19 +126,49 @@ class Hangman:
         """
 
         self._stage = 0
-        self._word = self._get_random_word()
         self._guessed_letters = []
 
 ########################################################################################################################
 
-    def _get_random_word(self) -> str:
+    def _choose_language(self) -> None:
         """
-        :return: a random word from a free web dictionary
+        Choose a language of the guessed word.
         """
 
-        response = get(self.DICT_SITE)
+        print("Do you want to guess an English word or a Finnish one?")
+
+        while True:
+            language = input("Type EN or FI:\n> ").upper()
+            if language == "EN":
+                self._word = self._get_random_english_word()
+                break
+            elif language == "FI":
+                self._word = self._get_random_finnish_word()
+                break
+            else:
+                continue
+
+########################################################################################################################
+
+    def _get_random_english_word(self) -> str:
+        """
+        :return: a random English word from a free web dictionary
+        """
+
+        response = get(self.DICT_SITE_EN)
         words = response.content.splitlines()
         return choice(words).decode("utf-8")
+
+########################################################################################################################
+
+    def _get_random_finnish_word(self) -> str:
+        """
+        :return: a random Finnish word from a free web dictionary
+        """
+
+        response = get(self.DICT_SITE_FI)
+        words = response.content.splitlines()
+        return choice(words).decode("utf-8").split()[0].strip()
 
 ########################################################################################################################
 
@@ -183,6 +214,7 @@ class Hangman:
         """
 
         print(self.LOGO)
+        self._choose_language()
 
         while True:
             self._print_word()
