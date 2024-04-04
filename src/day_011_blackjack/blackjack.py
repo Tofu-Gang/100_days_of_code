@@ -18,7 +18,8 @@ class Blackjack:
 
     def __init__(self):
         """
-
+        Initialize the game of Blackjack. Get a brand-new standard 52 cards deck and make place for player and dealer
+        cards.
         """
 
         self._deck = Deck52Standard()
@@ -29,8 +30,7 @@ class Blackjack:
 
     def _get_player_action(self) -> str:
         """
-
-        :return:
+        :return: either "h", "hit", "s" or "stand"
         """
 
         while True:
@@ -46,7 +46,7 @@ class Blackjack:
 
     def _is_player_bust(self) -> bool:
         """
-        :return:
+        :return: True if total value of player cards is over 21, False otherwise
         """
 
         return sum(self._player_cards) > 21
@@ -55,7 +55,7 @@ class Blackjack:
 
     def _is_dealer_bust(self) -> bool:
         """
-        :return:
+        :return: True if total value of dealer cards is over 21, False otherwise
         """
 
         return sum(self._dealer_cards) > 21
@@ -64,7 +64,7 @@ class Blackjack:
 
     def _is_blackjack(self) -> bool:
         """
-        :return:
+        :return: True if total value of player cards is exactly 21, False otherwise
         """
 
         return sum(self._player_cards) == 21
@@ -73,7 +73,7 @@ class Blackjack:
 
     def _does_player_stand(self) -> bool:
         """
-        :return:
+        :return: True if the player does not wish to draw more cards anymore, False otherwise
         """
 
         return len(self._dealer_cards) > 1
@@ -82,7 +82,7 @@ class Blackjack:
 
     def _finish_dealer_draw(self) -> None:
         """
-
+        Draw cards for the dealer until sum of their cards is 17 or more.
         """
 
         while sum(self._dealer_cards) < 17:
@@ -92,7 +92,7 @@ class Blackjack:
 
     def new_game(self) -> None:
         """
-
+        Play the game of Blackjack.
         """
 
         print(self.LOGO)
@@ -106,7 +106,6 @@ class Blackjack:
 
         while True:
             if self._does_player_stand():
-                # the player does not want to draw any more cards
                 print(f"Your final hand: {self._player_cards}, score: {sum(self._player_cards)}")
                 print(f"Dealer final hand: {self._dealer_cards}, score: {sum(self._dealer_cards)}")
 
@@ -145,7 +144,7 @@ class Blackjack:
 
 def run_program() -> None:
     """
-
+    Play the game of Blackjack.
     """
 
     blackjack = Blackjack()
