@@ -54,7 +54,7 @@ def _collect_operator() -> str:
 
 ########################################################################################################################
 
-def _run_calculation(num1: float, num2: float, operator: str) -> Union[float, None]:
+def run_calculation(num1: float, num2: float, operator: str) -> Union[float, None]:
     """
     :param num1: operand 1
     :param num2: operand 2
@@ -96,7 +96,7 @@ def run_program() -> None:
             print(f"First number is {num1}.")
         operator = _collect_operator()
         num2 = _collect_number("What's the next number?: ")
-        result = _run_calculation(num1, num2, operator)
+        result = run_calculation(num1, num2, operator)
         if result is not None:
             print(f"{num1} {operator} {num2} = {result}")
         else:
