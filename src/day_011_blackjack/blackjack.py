@@ -115,6 +115,8 @@ class Blackjack:
                     print("Your score is higher than the dealer's! You win.")
                 elif sum(self._player_cards) < sum(self._dealer_cards):
                     print("Your score is lower than the dealer's! You lose.")
+                else:
+                    print("Your score is equal to the dealer's! Draw.")
                 break
             else:
                 print(f"Your cards: {self._player_cards}, current score: {sum(self._player_cards)}")
