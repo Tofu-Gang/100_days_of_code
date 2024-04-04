@@ -1,4 +1,5 @@
 from typing import Union
+from math import inf
 
 LOGO = """
  _____________________
@@ -22,9 +23,9 @@ LOGO = """
 
 def _collect_number(message: str) -> float:
     """
-
-    :param message:
-    :return:
+    Print the message from the param and collect a float or integer from the user.
+    :param message: input prompt
+    :return: float or integer provided by the user
     """
 
     while True:
@@ -39,8 +40,8 @@ def _collect_number(message: str) -> float:
 
 def _collect_operator() -> str:
     """
-
-    :return:
+    Collect an operator from the user. Possible operators are +, -, *, /.
+    :return: one of the operators +, -, *, /
     """
 
     while True:
@@ -55,11 +56,10 @@ def _collect_operator() -> str:
 
 def _run_calculation(num1: float, num2: float, operator: str) -> Union[float, None]:
     """
-
-    :param num1:
-    :param num2:
-    :param operator:
-    :return:
+    :param num1: operand 1
+    :param num2: operand 2
+    :param operator: operator
+    :return: result of operand 1 operator operand 2
     """
 
     if operator == "+":
@@ -69,8 +69,12 @@ def _run_calculation(num1: float, num2: float, operator: str) -> Union[float, No
     elif operator == "*":
         return num1 * num2
     elif operator == "/":
-        return num1 / num2
+        try:
+            return num1 / num2
+        except ZeroDivisionError:
+            return inf
     else:
+        # shouldn't happen
         return None
 
 
@@ -78,7 +82,8 @@ def _run_calculation(num1: float, num2: float, operator: str) -> Union[float, No
 
 def run_program() -> None:
     """
-
+    Run the calculator. Let the user input either both numbers of the operation or leave the first one as the result of
+    the previous operation.
     """
 
     print(LOGO)
@@ -92,22 +97,30 @@ def run_program() -> None:
         operator = _collect_operator()
         num2 = _collect_number("What's the next number?: ")
         result = _run_calculation(num1, num2, operator)
-        print(f"{num1} {operator} {num2} = {result}")
+        if result is not None:
+            print(f"{num1} {operator} {num2} = {result}")
+        else:
+            print("Something went wrong with the calculation.")
 
         while True:
             print("Press Ctrl+C to exit, or:")
-            print(f"-type \"(y)es\" to continue calculating with {result}")
-            print("-type \"(n)o\" to start a new calculation")
-            continue_calculation = input("> ").strip().lower()
+            if result is not None and result is not inf:
+                print(f"-type \"(y)es\" to continue calculating with {result}")
+                print("-type \"(n)o\" to start a new calculation")
+                continue_calculation = input("> ").strip().lower()
 
-            if continue_calculation in ("y", "yes"):
-                num1 = result
-                break
-            elif continue_calculation in ("n", "no"):
-                num1 = None
-                break
+                if continue_calculation in ("y", "yes"):
+                    num1 = result
+                    break
+                elif continue_calculation in ("n", "no"):
+                    num1 = None
+                    break
+                else:
+                    print("Invalid value. (Y)es or (N)o required. Try again.")
             else:
-                print("Invalid value. (Y)es or (N)o required. Try again.")
-
+                num1 = None
+                print("Press Enter to start a new calculation.")
+                input()
+                break
 
 ########################################################################################################################
