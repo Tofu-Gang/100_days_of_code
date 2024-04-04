@@ -1,9 +1,19 @@
-from os import sep, listdir
+from os import sep, listdir, system, name
 from os.path import dirname, realpath
 from typing import Tuple, Union
 from math import floor
 
 from constants import EXIT_MESSAGE, SRC_DIR_NAME
+
+
+########################################################################################################################
+
+def clear_screen() -> None:
+    """
+
+    """
+
+    system('cls' if name == 'nt' else 'clear')
 
 
 ########################################################################################################################
