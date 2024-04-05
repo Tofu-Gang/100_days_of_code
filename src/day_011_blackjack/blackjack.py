@@ -1,3 +1,5 @@
+from typing import List
+
 from src.day_011_blackjack.deck import Deck52Standard
 from utils import clear_screen
 
@@ -44,30 +46,50 @@ class Blackjack:
 
 ########################################################################################################################
 
-    def _is_player_bust(self) -> bool:
+    def _get_cards_score(self, cards: List[int]) -> int:
         """
-        :return: True if total value of player cards is over 21, False otherwise
+        Allows to value ace as 11 or 1, depending on what is better for the cards holder.
+
+        :param cards: either player or dealer cards list
+        :return: cards total score
         """
 
-        return sum(self._player_cards) > 21
+        basic_score = sum(cards)
+
+        if 11 in cards:
+            if basic_score > 21:
+                return basic_score - 10
+            else:
+                return basic_score
+        else:
+            return basic_score
+
+########################################################################################################################
+
+    def _is_player_bust(self) -> bool:
+        """
+        :return: True if player score is over 21, False otherwise
+        """
+
+        return self._get_cards_score(self._player_cards) > 21
 
 ########################################################################################################################
 
     def _is_dealer_bust(self) -> bool:
         """
-        :return: True if total value of dealer cards is over 21, False otherwise
+        :return: True if dealer score is over 21, False otherwise
         """
 
-        return sum(self._dealer_cards) > 21
+        return self._get_cards_score(self._dealer_cards) > 21
 
 ########################################################################################################################
 
     def _is_blackjack(self) -> bool:
         """
-        :return: True if total value of player cards is exactly 21, False otherwise
+        :return: True if player score is exactly 21, False otherwise
         """
 
-        return sum(self._player_cards) == 21
+        return self._get_cards_score(self._player_cards) == 21
 
 ########################################################################################################################
 
@@ -82,10 +104,10 @@ class Blackjack:
 
     def _finish_dealer_draw(self) -> None:
         """
-        Draw cards for the dealer until sum of their cards is 17 or more.
+        Draw cards for the dealer until their score is 17 or more.
         """
 
-        while sum(self._dealer_cards) < 17:
+        while self._get_cards_score(self._dealer_cards) < 17:
             self._dealer_cards.append(self._deck.draw())
 
 ########################################################################################################################
@@ -105,21 +127,24 @@ class Blackjack:
         self._player_cards.append(self._deck.draw())
 
         while True:
+            player_score = self._get_cards_score(self._player_cards)
+            dealer_score = self._get_cards_score(self._dealer_cards)
+
             if self._does_player_stand():
-                print(f"Your final hand: {self._player_cards}, score: {sum(self._player_cards)}")
-                print(f"Dealer final hand: {self._dealer_cards}, score: {sum(self._dealer_cards)}")
+                print(f"Your final hand: {self._player_cards}, score: {player_score}")
+                print(f"Dealer final hand: {self._dealer_cards}, score: {dealer_score}")
 
                 if self._is_dealer_bust():
                     print("Dealer bust! You win.")
-                elif sum(self._player_cards) > sum(self._dealer_cards):
+                elif player_score > dealer_score:
                     print("Your score is higher than the dealer's! You win.")
-                elif sum(self._player_cards) < sum(self._dealer_cards):
+                elif player_score < dealer_score:
                     print("Your score is lower than the dealer's! You lose.")
                 else:
                     print("Your score is equal to the dealer's! Draw.")
                 break
             else:
-                print(f"Your cards: {self._player_cards}, current score: {sum(self._player_cards)}")
+                print(f"Your cards: {self._player_cards}, current score: {player_score}")
                 print(f"Dealer's first card: {self._dealer_cards[0]}")
 
                 if self._is_player_bust():
