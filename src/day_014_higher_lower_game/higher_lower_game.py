@@ -28,10 +28,10 @@ VS = """
 
 def _print_comparison(data_first: Dict[str, str | int], data_second: Dict[str, str | int]) -> None:
     """
+    Print the compare display for the user. Include all available data except for the second subject follower count.
 
-    :param data_first:
-    :param data_second:
-    :return:
+    :param data_first: first subject to compare follower count (revealed)
+    :param data_second: second subject to compare follower count (hidden)
     """
 
     name_first = data_first["name"]
@@ -50,8 +50,7 @@ def _print_comparison(data_first: Dict[str, str | int], data_second: Dict[str, s
 
 def _get_user_comparison() -> str:
     """
-
-    :return:
+    :return: user comparison choice, any from (h, higher, l, lower)
     """
 
     while True:
@@ -68,7 +67,7 @@ def _get_user_comparison() -> str:
 
 def run_program() -> None:
     """
-
+    Play the Higher/Lower game.
     """
 
     print(LOGO)
