@@ -1,7 +1,7 @@
 from random import choice
 from typing import Dict
 
-from data import DATA
+from .data import DATA
 
 LOGO = """
     __  ___       __             
@@ -89,6 +89,8 @@ def run_program() -> None:
             score += 1
             print(f"You're right! Current score: {score}")
             data_first = data_second
+            print("Press Enter to continue...")
+            input()
         else:
             print(f"Sorry, that's wrong. Final score: {score}. Game over.")
             break
