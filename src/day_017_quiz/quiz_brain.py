@@ -23,6 +23,26 @@ class QuizzBrain:
 
 ########################################################################################################################
 
+    @property
+    def score(self) -> int:
+        """
+        :return: the user score
+        """
+
+        return self._score
+
+########################################################################################################################
+
+    @property
+    def questions_passed(self) -> int:
+        """
+        :return: how many questions was the user asked so far
+        """
+
+        return self._question_number
+
+########################################################################################################################
+
     def still_has_questions(self) -> bool:
         """
         :return: True if there are questions left, False otherwise
@@ -43,7 +63,8 @@ class QuizzBrain:
         else:
             print("That's wrong.")
         print(f"The correct answer was: {self._question.answer}.")
-        print(f"Your current score is: {self._score}/{self._question_number}")
+        if self.still_has_questions():
+            print(f"Your current score is: {self._score}/{self._question_number}")
 
         self._question = None
         self._answer = None
