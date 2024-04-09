@@ -39,20 +39,21 @@ class CoffeeMachine:
 
     def __init__(self):
         """
-
+        The coffee machine has tanks for water and milk and a compartment for coffee and money.
         """
 
         self._water = 0
         self._milk = 0
         self._coffee = 0
         self._money = 0
+        # stores the recipe selected by the user
         self._recipe = None
 
 ########################################################################################################################
 
     def _print_report(self) -> None:
         """
-
+        Prints how much water, milk, coffee and money is in the coffee machine.
         """
 
         print(f"Water: {self._water}ml")
@@ -64,7 +65,7 @@ class CoffeeMachine:
 
     def _fill_everything(self) -> None:
         """
-
+        Fill the water and milk tanks and the coffee compartment.
         """
 
         self._water = self.WATER_CAPACITY
@@ -76,12 +77,13 @@ class CoffeeMachine:
 
     def _insert_money(self, pennies: int, nickels: int, dimes: int, quarters: int) -> bool:
         """
+        Insert money to the machine. If it is enough to pay for the coffee, accept it and return change if needed.
 
-        :param pennies:
-        :param nickels:
-        :param dimes:
-        :param quarters:
-        :return:
+        :param pennies: pennies amount
+        :param nickels: nickels amount
+        :param dimes: dimes amount
+        :param quarters: quarters amount
+        :return: True if the transaction was successful, False otherwise
         """
 
         insert_total = sum((pennies * self.PENNY_VALUE,
@@ -106,7 +108,7 @@ class CoffeeMachine:
 
     def _make_coffee(self) -> None:
         """
-
+        Make the coffee for the user. Deduct what was needed to make the coffee from the machine supplies.
         """
 
         self._water -= self.RECIPES[self._recipe][self.KEY_WATER]
@@ -118,8 +120,7 @@ class CoffeeMachine:
 
     def _can_coffee_be_made(self) -> bool:
         """
-
-        :return:
+        :return: True if there is enough water, milk and coffee for the selected recipe, False otherwise
         """
 
         return (self.RECIPES[self._recipe][self.KEY_WATER] <= self._water and
@@ -128,9 +129,9 @@ class CoffeeMachine:
 
 ########################################################################################################################
 
-    def operate(self) -> None:
+    def interact(self) -> None:
         """
-
+        Interact with the coffee machine.
         """
 
         while True:
@@ -149,7 +150,6 @@ class CoffeeMachine:
                     paid = self._insert_money(pennies, nickles, dimes, quarters)
                     if paid:
                         self._make_coffee()
-                    self._recipe = None
                 else:
                     if self.RECIPES[self._recipe][self.KEY_WATER] > self._water:
                         print("Sorry there is not enough water.")
@@ -157,6 +157,7 @@ class CoffeeMachine:
                         print("Sorry there is not enough milk.")
                     if self.RECIPES[self._recipe][self.KEY_COFFEE] > self._coffee:
                         print("Sorry there is not enough coffee.")
+                self._recipe = None
             elif choice.lower() in ("r", "report"):
                 self._print_report()
             elif choice.lower() in ("f", "fill"):
@@ -170,10 +171,10 @@ class CoffeeMachine:
 
 def run_program() -> None:
     """
-
+    Interact with the coffee machine.
     """
 
-    CoffeeMachine().operate()
+    CoffeeMachine().interact()
 
 
 ########################################################################################################################
