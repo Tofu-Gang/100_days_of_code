@@ -1,6 +1,8 @@
 from random import choice
+from requests import get
+from json import loads
+from html import unescape
 
-from .data import question_data, TEXT_KEY, ANSWER_KEY
 from .question_model import Question
 
 
@@ -15,8 +17,9 @@ class QuizzBrain:
         """
 
         self._question_number = 0
-        self._question_bank = list(Question(question[TEXT_KEY], eval(question[ANSWER_KEY]))
-                                   for question in question_data)
+        opentdb_questions = loads(get("https://opentdb.com/api.php?amount=20&type=boolean").content)["results"]
+        self._question_bank = list(Question(unescape(question["question"]), eval(question["correct_answer"]))
+                                   for question in opentdb_questions)
         self._score = 0
         self._question = None
         self._answer = None
