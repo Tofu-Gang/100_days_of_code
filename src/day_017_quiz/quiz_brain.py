@@ -19,33 +19,38 @@ class QuizzBrain:
 
 ########################################################################################################################
 
-    def next_question(self) -> bool | None:
+    def still_has_questions(self) -> bool:
+        """
+        :return: True if there are questions left, False otherwise
+        """
+
+        return len(self._question_bank) > 0
+
+########################################################################################################################
+
+    def next_question(self) -> bool:
         """
         Display the question. Get the answer from the user.
 
-        :return: True for correct answer, False for incorrect, None if no question can be displayed.
+        :return: True for correct answer, False for incorrect one
         """
 
-        try:
-            question = choice(self._question_bank)
+        question = choice(self._question_bank)
 
-            while True:
-                answer = input(f"Q.{self._question_number}: {question.text} (True/False)?: ").strip().upper()
+        while True:
+            answer = input(f"Q.{self._question_number}: {question.text} (True/False)?: ").strip().upper()
 
-                if answer in ("T", "TRUE"):
-                    answer = True
-                    break
-                elif answer in ("F", "FALSE"):
-                    answer = False
-                    break
-                else:
-                    print("Invalid value. Please try again.")
+            if answer in ("T", "TRUE"):
+                answer = True
+                break
+            elif answer in ("F", "FALSE"):
+                answer = False
+                break
+            else:
+                print("Invalid value. Please try again.")
 
-            self._question_bank.remove(question)
-            self._question_number += 1
-            return bool(answer) == question.answer
-        except IndexError:
-            print("No more questions. You win the game!")
-            return None
+        self._question_bank.remove(question)
+        self._question_number += 1
+        return bool(answer) == question.answer
 
 ########################################################################################################################
