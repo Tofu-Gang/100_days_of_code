@@ -10,12 +10,16 @@ class QuizzBrain:
 
     def __init__(self):
         """
-        Set the questions counter for display purposes. Load question bank.
+        Set the questions counter for display purposes. Set the user score to zero. Load question bank. Create temporary
+        variables where the current question and user answer will be stored between function calls.
         """
 
-        self._question_number = 1
-        self._question_bank = list(Question(question[TEXT_KEY], bool(question[ANSWER_KEY]))
+        self._question_number = 0
+        self._question_bank = list(Question(question[TEXT_KEY], eval(question[ANSWER_KEY]))
                                    for question in question_data)
+        self._score = 0
+        self._question = None
+        self._answer = None
 
 ########################################################################################################################
 
@@ -28,29 +32,44 @@ class QuizzBrain:
 
 ########################################################################################################################
 
-    def next_question(self) -> bool:
+    def check_answer(self) -> None:
+        """
+        Checks the user answer and displays the result.
+        """
+
+        if self._question.answer == self._answer:
+            print("You got it right!")
+            self._score += 1
+        else:
+            print("That's wrong.")
+        print(f"The correct answer was: {self._question.answer}.")
+        print(f"Your current score is: {self._score}/{self._question_number}")
+
+        self._question = None
+        self._answer = None
+
+########################################################################################################################
+
+    def next_question(self) -> None:
         """
         Display the question. Get the answer from the user.
-
-        :return: True for correct answer, False for incorrect one
         """
 
-        question = choice(self._question_bank)
+        self._question_number += 1
+        self._question = choice(self._question_bank)
 
         while True:
-            answer = input(f"Q.{self._question_number}: {question.text} (True/False)?: ").strip().upper()
+            answer = input(f"Q.{self._question_number}: {self._question.text} (True/False)?: ").strip().upper()
 
             if answer in ("T", "TRUE"):
-                answer = True
+                self._answer = True
                 break
             elif answer in ("F", "FALSE"):
-                answer = False
+                self._answer = False
                 break
             else:
                 print("Invalid value. Please try again.")
 
-        self._question_bank.remove(question)
-        self._question_number += 1
-        return bool(answer) == question.answer
+        self._question_bank.remove(self._question)
 
 ########################################################################################################################
