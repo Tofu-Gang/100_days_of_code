@@ -1,5 +1,5 @@
 from turtle import Turtle, Screen, colormode
-from random import randint
+from random import randint, choice
 
 
 ########################################################################################################################
@@ -21,6 +21,19 @@ def dashed_line(turtle: Turtle) -> None:
 
 ########################################################################################################################
 
+def random_color() -> tuple[int, int, int]:
+    """
+    :return:
+    """
+
+    r = randint(0, 255)
+    g = randint(0, 255)
+    b = randint(0, 255)
+    return (r, g, b)
+
+
+########################################################################################################################
+
 def draw_shape(turtle: Turtle, side_size: int, sides_count: int) -> None:
     """
     Draw a shape with specified number and size of sides. Each shape is drawn with a different, random color.
@@ -31,14 +44,29 @@ def draw_shape(turtle: Turtle, side_size: int, sides_count: int) -> None:
     """
 
     colormode(255)
-    r = randint(0, 255)
-    g = randint(0, 255)
-    b = randint(0, 255)
-    turtle.pencolor((r, g, b))
+    turtle.pencolor(random_color())
     angle = 360 / sides_count
     for _ in range(sides_count):
         turtle.forward(side_size)
         turtle.right(angle)
+
+
+########################################################################################################################
+
+def random_walk(turtle: Turtle) -> None:
+    """
+
+    :param turtle:
+    """
+
+    colormode(255)
+    turtle.speed(10)
+    turtle.pensize(10)
+
+    for _ in range(200):
+        turtle.pencolor(random_color())
+        turtle.right(choice((90, 180, 270, 360)))
+        turtle.forward(20)
 
 
 ########################################################################################################################
@@ -50,15 +78,7 @@ def run_program() -> None:
     """
 
     timmy = Turtle()
-    draw_shape(timmy, 100, 3)
-    draw_shape(timmy, 100, 4)
-    draw_shape(timmy, 100, 5)
-    draw_shape(timmy, 100, 6)
-    draw_shape(timmy, 100, 7)
-    draw_shape(timmy, 100, 8)
-    draw_shape(timmy, 100, 9)
-    draw_shape(timmy, 100, 10)
-    dashed_line(timmy)
+    random_walk(timmy)
     screen = Screen()
     screen.exitonclick()
 
