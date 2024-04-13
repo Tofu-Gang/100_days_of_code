@@ -81,8 +81,12 @@ def draw_spirograph(turtle: Turtle) -> None:
     turtle.speed("fastest")
 
     for _ in range(90):
-        turtle.pencolor(random_color())
+        color = random_color()
+        turtle.pencolor(color)
+        turtle.fillcolor(color)
+        turtle.begin_fill()
         turtle.circle(100)
+        turtle.end_fill()
         turtle.right(4)
 
 
