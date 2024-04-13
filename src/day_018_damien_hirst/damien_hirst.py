@@ -71,6 +71,23 @@ def random_walk(turtle: Turtle) -> None:
 
 ########################################################################################################################
 
+def draw_spirograph(turtle: Turtle) -> None:
+    """
+
+    :param turtle:
+    """
+
+    colormode(255)
+    turtle.speed("fastest")
+
+    for _ in range(90):
+        turtle.pencolor(random_color())
+        turtle.circle(100)
+        turtle.right(4)
+
+
+########################################################################################################################
+
 
 def run_program() -> None:
     """
@@ -78,7 +95,7 @@ def run_program() -> None:
     """
 
     timmy = Turtle()
-    random_walk(timmy)
+    draw_spirograph(timmy)
     screen = Screen()
     screen.exitonclick()
 
