@@ -26,6 +26,7 @@ def random_color() -> tuple[int, int, int]:
     :return:
     """
 
+    colormode(255)
     r = randint(0, 255)
     g = randint(0, 255)
     b = randint(0, 255)
@@ -43,7 +44,6 @@ def draw_shape(turtle: Turtle, side_size: int, sides_count: int) -> None:
     :param sides_count: number of shape sides
     """
 
-    colormode(255)
     turtle.pencolor(random_color())
     angle = 360 / sides_count
     for _ in range(sides_count):
@@ -59,8 +59,6 @@ def random_walk(turtle: Turtle) -> None:
     :param turtle:
     """
 
-    colormode(255)
-    turtle.speed(10)
     turtle.pensize(10)
 
     for _ in range(200):
@@ -77,17 +75,17 @@ def draw_spirograph(turtle: Turtle) -> None:
     :param turtle:
     """
 
-    colormode(255)
-    turtle.speed("fastest")
+    step = 5
+    steps = int(360 / step)
 
-    for _ in range(90):
+    for _ in range(steps):
         color = random_color()
         turtle.pencolor(color)
         turtle.fillcolor(color)
         turtle.begin_fill()
         turtle.circle(100)
         turtle.end_fill()
-        turtle.right(4)
+        turtle.right(step)
 
 
 ########################################################################################################################
@@ -99,6 +97,7 @@ def run_program() -> None:
     """
 
     timmy = Turtle()
+    timmy.speed("fastest")
     draw_spirograph(timmy)
     screen = Screen()
     screen.exitonclick()
