@@ -1,13 +1,16 @@
 from turtle import Turtle, Screen
 from time import sleep
+from random import randint
 
 
 ########################################################################################################################
 
 class Snake:
-    SCREEN_WIDTH = 600
-    SCREEN_HEIGHT = 600
-    TURTLE_SQUARE_SIDE = 21
+    TURTLE_SQUARE_SIDE = 20
+    GRID_WIDTH = 30
+    GRID_HEIGHT = 30
+    SCREEN_WIDTH = TURTLE_SQUARE_SIDE * GRID_WIDTH
+    SCREEN_HEIGHT = TURTLE_SQUARE_SIDE * GRID_HEIGHT
     SNAKE_SPEED = 10
     EAST = 0
     NORTH = 90
@@ -50,6 +53,44 @@ class Snake:
                                               else self._snake[0].heading()), "Right")
         self._screen.listen()
 
+        self._food = Turtle("circle")
+        self._food.color("blue")
+        self._food.shapesize(stretch_len=0.5, stretch_wid=0.5)
+        self._food.speed("fastest")
+        self._food.penup()
+
+        self._score = 0
+        self._info_turtle = Turtle()
+
+########################################################################################################################
+
+    def _spawn_food(self) -> None:
+        """
+
+        """
+
+        while True:
+            x = randint(int(-self.GRID_WIDTH / 2) + 1, int(self.GRID_WIDTH / 2) - 1) * self.TURTLE_SQUARE_SIDE
+            y = randint(int(-self.GRID_HEIGHT / 2) + 1, int(self.GRID_HEIGHT / 2) - 1) * self.TURTLE_SQUARE_SIDE
+
+            if (x, y) not in [segment.pos() for segment in self._snake]:
+                self._food.goto((x, y))
+                break
+
+########################################################################################################################
+
+    def _update_score(self) -> None:
+        """
+
+        """
+
+        self._info_turtle.reset()
+        self._info_turtle.hideturtle()
+        self._info_turtle.penup()
+        self._info_turtle.color("white")
+        self._info_turtle.goto(0, self.SCREEN_HEIGHT / 2 - self.TURTLE_SQUARE_SIDE * 2)
+        self._info_turtle.write(f"Score: {self._score}", align="center", font=("Courier", 24, "normal"))
+
 ########################################################################################################################
 
     def _expand_snake(self) -> None:
@@ -73,6 +114,25 @@ class Snake:
             segment.goto((0, 0))
 
         self._snake.append(segment)
+        self._snake[0].color("red")
+
+########################################################################################################################
+
+    def _is_crashed(self) -> bool:
+        """
+
+        :return:
+        """
+
+        head_pos_x = self._snake[0].pos()[0]
+        head_pos_y = self._snake[0].pos()[1]
+
+        return (head_pos_x <= -self.SCREEN_WIDTH / 2 or
+                head_pos_x >= self.SCREEN_WIDTH / 2 or
+                head_pos_y <= -self.SCREEN_HEIGHT / 2 or
+                head_pos_y >= self.SCREEN_HEIGHT / 2)# or
+                # head_pos_x in (segment.pos()[0] for segment in self._snake[1:]) or
+                # head_pos_y in (segment.pos()[1] for segment in self._snake[1:]))
 
 ########################################################################################################################
 
@@ -111,8 +171,18 @@ class Snake:
 
         """
 
-        for _ in range(100):
+        self._spawn_food()
+        self._update_score()
+
+        while not self._is_crashed():
             self._move_snake()
+            distance = int(self._snake[0].distance(self._food.pos()))
+
+            if distance == 0:
+                self._score += 1
+                self._update_score()
+                self._expand_snake()
+                self._spawn_food()
 
 ########################################################################################################################
 
@@ -121,6 +191,8 @@ class Snake:
 
         """
 
+        self._info_turtle.goto(0, 0)
+        self._info_turtle.write("GAME OVER", align="center", font=("Courier", 24, "normal"))
         self._screen.exitonclick()
 
 
