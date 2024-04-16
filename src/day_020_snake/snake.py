@@ -15,15 +15,28 @@ class Snake:
 
         """
 
-        screen = Screen()
-        screen.setup(width=self.SCREEN_WIDTH, height=self.SCREEN_HEIGHT)
-        screen.bgcolor("black")
-        screen.title("SNAKE")
-        snake = [Turtle(shape="square"), Turtle(shape="square"), Turtle(shape="square")]
-        [turtle.color("white") for turtle in snake]
-        [turtle.penup() for turtle in snake]
-        [snake[i].goto(0 - i * self.TURTLE_SQUARE_SIDE, 0) for i in range(len(snake))]
-        screen.exitonclick()
+        self._screen = Screen()
+        self._screen.setup(width=self.SCREEN_WIDTH, height=self.SCREEN_HEIGHT)
+        self._screen.bgcolor("black")
+        self._screen.title("SNAKE")
+        self._snake = []
+        self._expand_snake()
+        self._expand_snake()
+        self._expand_snake()
+        self._screen.exitonclick()
+
+########################################################################################################################
+
+    def _expand_snake(self) -> None:
+        """
+
+        """
+
+        turtle = Turtle(shape="square")
+        turtle.color("white")
+        turtle.penup()
+        turtle.goto(0 - len(self._snake) * self.TURTLE_SQUARE_SIDE, 0)
+        self._snake.append(turtle)
 
 
 ########################################################################################################################
