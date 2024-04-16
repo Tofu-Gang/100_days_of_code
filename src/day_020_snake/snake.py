@@ -33,6 +33,7 @@ class Snake:
 
         self._snake = []
         [self._expand_snake() for _ in range(self.STARTING_SNAKE_LENGTH)]
+        self._snake[0].color("red")
         self._screen.update()
 
         self._screen.onkeypress(
@@ -66,7 +67,7 @@ class Snake:
 
     def _spawn_food(self) -> None:
         """
-
+        Spawn food for the snake.
         """
 
         while True:
@@ -81,7 +82,7 @@ class Snake:
 
     def _update_score(self) -> None:
         """
-
+        Show player score in the window.
         """
 
         self._info_turtle.reset()
@@ -114,14 +115,12 @@ class Snake:
             segment.goto((0, 0))
 
         self._snake.append(segment)
-        self._snake[0].color("red")
 
 ########################################################################################################################
 
     def _is_crashed(self) -> bool:
         """
-
-        :return:
+        :return: True if the snake crashed either to its tail or to a wall, False otherwise
         """
 
         head_pos_x = self._snake[0].pos()[0]
@@ -130,9 +129,8 @@ class Snake:
         return (head_pos_x <= -self.SCREEN_WIDTH / 2 or
                 head_pos_x >= self.SCREEN_WIDTH / 2 or
                 head_pos_y <= -self.SCREEN_HEIGHT / 2 or
-                head_pos_y >= self.SCREEN_HEIGHT / 2)# or
-                # head_pos_x in (segment.pos()[0] for segment in self._snake[1:]) or
-                # head_pos_y in (segment.pos()[1] for segment in self._snake[1:]))
+                head_pos_y >= self.SCREEN_HEIGHT / 2 or
+                (head_pos_x, head_pos_y) in [segment.pos() for segment in self._snake[1:]])
 
 ########################################################################################################################
 
@@ -168,7 +166,7 @@ class Snake:
 
     def start_game(self) -> None:
         """
-
+        Start the game.
         """
 
         self._spawn_food()
@@ -188,7 +186,7 @@ class Snake:
 
     def end_game(self) -> None:
         """
-
+        End the game.
         """
 
         self._info_turtle.goto(0, 0)
