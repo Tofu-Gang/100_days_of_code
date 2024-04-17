@@ -39,9 +39,14 @@ class Pong:
 
         """
 
+        self._ball.launch()
+
         while True:
             self._paddle_right.move()
             self._ball.move()
+            if (self._ball.pos()[0] < -self._screen.window_width() / 2 or
+                    self._ball.pos()[0] > self._screen.window_width() / 2):
+                self._ball.launch()
             sleep(1 / self.SPEED)
 
 ########################################################################################################################

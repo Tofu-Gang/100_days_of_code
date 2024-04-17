@@ -1,14 +1,12 @@
 from turtle import Turtle, Screen
 from random import choice
 
+from .constants import NORTH, SOUTH
+
 
 ########################################################################################################################
 
 class Paddle(Turtle):
-    # an angle for an UP direction
-    NORTH = 90
-    # an angle for a DOWN direction
-    SOUTH = 270
     WIDTH = 20
     # number of pixels the paddles move; a step for their movement
     STEP = 10
@@ -41,7 +39,7 @@ class LeftPaddle(Paddle):
         self._screen.onkeypress(self._move_down, "Down")
         self.goto(-self._screen.window_width() / 2 + Paddle.WIDTH, 0)
         # rotate the paddle vertically
-        self.setheading(self.NORTH)
+        self.setheading(NORTH)
 
 ########################################################################################################################
 
@@ -50,7 +48,7 @@ class LeftPaddle(Paddle):
 
         """
 
-        self.setheading(self.NORTH)
+        self.setheading(NORTH)
         self.forward(self.STEP)
         self._screen.update()
 
@@ -61,7 +59,7 @@ class LeftPaddle(Paddle):
 
         """
 
-        self.setheading(self.SOUTH)
+        self.setheading(SOUTH)
         self.forward(self.STEP)
         self._screen.update()
 
@@ -79,7 +77,7 @@ class RightPaddle(Paddle):
         # try to place the right paddle in the same distance from its edge as is the left one, the screen geometry works
         # weird, that's why there is the 1.4 coefficient
         self.goto(self._screen.window_width() / 2 - Paddle.WIDTH * 1.4, 0)
-        self.setheading(choice((self.NORTH, self.SOUTH)))
+        self.setheading(choice((NORTH, SOUTH)))
 
 ########################################################################################################################
 
@@ -89,9 +87,9 @@ class RightPaddle(Paddle):
         """
 
         if self.pos()[1] > self._screen.window_height() / 2:
-            self.setheading(self.SOUTH)
+            self.setheading(SOUTH)
         elif self.pos()[1] < -self._screen.window_height() / 2:
-            self.setheading(self.NORTH)
+            self.setheading(NORTH)
         self.forward(self.STEP)
         self._screen.update()
 
