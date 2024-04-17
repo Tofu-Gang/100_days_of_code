@@ -88,6 +88,8 @@ class Pong:
         while True:
             self._paddle_left.move()
             self._paddle_right.move()
+            # IMPOSSIBRU
+            # self._paddle_right.goto(self._paddle_right.pos()[0], self._ball.pos()[1])
             self._ball.move()
 
             if (self._ball.pos()[0] < -self._screen.window_width() / 2 or
