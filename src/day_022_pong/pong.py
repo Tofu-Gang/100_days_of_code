@@ -17,7 +17,7 @@ class Pong:
 
     def __init__(self):
         """
-        Set up the screen.
+        Set up the screen. Create the ball and two paddles.
         """
 
         self._screen = Screen()
@@ -30,7 +30,7 @@ class Pong:
         self._score_right = 0
         self._score_turtle = Turtle()
         self._update_score()
-        self._paint_vertical_line()
+        self._draw_vertical_line()
 
         self._paddle_left = LeftPaddle()
         self._paddle_right = RightPaddle()
@@ -40,9 +40,9 @@ class Pong:
 
 ########################################################################################################################
 
-    def _paint_vertical_line(self) -> None:
+    def _draw_vertical_line(self) -> None:
         """
-
+        Draw the vertical line which divides the window in half.
         """
 
         turtle = Turtle()
@@ -80,7 +80,7 @@ class Pong:
 
     def start_game(self) -> None:
         """
-
+        Start the game.
         """
 
         self._ball.launch()

@@ -30,7 +30,7 @@ class Ball(Turtle):
 
     def launch(self) -> None:
         """
-
+        Launch the ball from the center of the window randomly to the left side.
         """
 
         self.goto(0, 0)
@@ -41,7 +41,8 @@ class Ball(Turtle):
 
     def move(self) -> None:
         """
-
+        Call this function repeatedly; move the ball and detect collisions with the top and bottom wall and with both
+        paddles.
         """
 
         # bounce from top and bottom walls

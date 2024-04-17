@@ -7,6 +7,7 @@ from .constants import NORTH, SOUTH
 ########################################################################################################################
 
 class Paddle(Turtle):
+    # how many times is the height greater than the width
     HEIGHT_FACTOR = 4
     WIDTH = 20
     HEIGHT = WIDTH * HEIGHT_FACTOR
@@ -31,8 +32,7 @@ class Paddle(Turtle):
     @property
     def top_y(self) -> int:
         """
-
-        :return:
+        :return: top y coordinate of the paddle
         """
 
         return self.pos()[1] + self.HEIGHT / 2
@@ -42,8 +42,7 @@ class Paddle(Turtle):
     @property
     def bottom_y(self) -> int:
         """
-
-        :return:
+        :return: bottom y coordinate of the paddle
         """
 
         return self.pos()[1] - self.HEIGHT / 2
@@ -55,7 +54,7 @@ class LeftPaddle(Paddle):
 
     def __init__(self):
         """
-
+        Create left paddle. Map up and down arrow keys to moving the paddle.
         """
 
         super().__init__()
@@ -72,7 +71,7 @@ class LeftPaddle(Paddle):
 
     def _move_up(self) -> None:
         """
-
+        Move the paddle up.
         """
 
         self.setheading(NORTH)
@@ -82,7 +81,7 @@ class LeftPaddle(Paddle):
 
     def _move_down(self) -> None:
         """
-
+        Move the paddle down.
         """
 
         self.setheading(SOUTH)
@@ -92,7 +91,7 @@ class LeftPaddle(Paddle):
 
     def _reset_movement(self) -> None:
         """
-
+        Stop moving the paddle.
         """
 
         self._movement_delta = 0
@@ -101,7 +100,10 @@ class LeftPaddle(Paddle):
 
     def move(self) -> None:
         """
-
+        To remove the key repeat delay, the logic of moving the paddle had to change. Call this function repeatedly; a
+        product of the step and movement delta is used as an argument in moving the paddle. The delta value is 1 while
+        key up/down is pressed, and zero otherwise. This means that the product is zero while no key is pressed and the
+        paddle does not move.
         """
 
         # border values for y position of the paddle
@@ -125,7 +127,7 @@ class RightPaddle(Paddle):
 
     def __init__(self):
         """
-
+        Create the right paddle. It just moves up and down.
         """
 
         super().__init__()
@@ -138,7 +140,7 @@ class RightPaddle(Paddle):
 
     def move(self) -> None:
         """
-
+        Call this function repeatedly; it moves the paddle continuously up and down.
         """
 
         if self.pos()[1] > self._screen.window_height() / 2:
