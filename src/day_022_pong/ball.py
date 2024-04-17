@@ -2,13 +2,14 @@ from turtle import Turtle
 from random import randint
 from time import sleep
 
+from .constants import STEP
+
 
 ########################################################################################################################
 
 class Ball(Turtle):
     WIDTH = 20
     SPEED = 50
-    STEP = 5
 
 ########################################################################################################################
 
@@ -36,7 +37,7 @@ class Ball(Turtle):
         self.left(angle)
 
         while self._is_moving:
-            self.forward(self.STEP)
+            self.forward(STEP)
             self._screen.update()
             sleep(1 / self.SPEED)
 

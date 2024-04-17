@@ -1,5 +1,9 @@
 from turtle import Turtle
 
+from .constants import NORTH
+
+
+########################################################################################################################
 
 class Paddle(Turtle):
     WIDTH = 20
@@ -14,7 +18,9 @@ class Paddle(Turtle):
         super().__init__(shape="square")
         self.color("white")
         self.penup()
-        self.shapesize(4, 1)
+        self.shapesize(1, 4)
+        # rotate the paddle vertically
+        self.setheading(NORTH)
 
 
 ########################################################################################################################
