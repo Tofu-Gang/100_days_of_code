@@ -1,8 +1,10 @@
 from turtle import Screen
+from random import choice
+from time import sleep
 
 from .paddle import Paddle
 from .ball import Ball
-from .constants import NORTH, SOUTH, STEP
+from .constants import NORTH, SOUTH, STEP, SPEED
 
 
 ########################################################################################################################
@@ -30,13 +32,13 @@ class Pong:
         # try to place the right paddle in the same distance from its edge as is the left one, the screen geometry works
         # weird, that's why there is the 1.4 coefficient
         self._paddle_right.goto(self.SCREEN_WIDTH / 2 - Paddle.WIDTH * 1.4, 0)
+        self._paddle_right.setheading(choice((NORTH, SOUTH)))
 
         self._screen.onkeypress(self._move_paddle_left_up, "Up")
         self._screen.onkeypress(self._move_paddle_left_down, "Down")
         self._screen.listen()
 
         self._ball = Ball(self._screen)
-        self._ball.start_moving()
 
 ########################################################################################################################
 
@@ -62,6 +64,32 @@ class Pong:
 
 ########################################################################################################################
 
+    def _move_right_paddle(self) -> None:
+        """
+
+        """
+
+        if self._paddle_right.pos()[1] > self.SCREEN_HEIGHT / 2:
+            self._paddle_right.setheading(SOUTH)
+        elif self._paddle_right.pos()[1] < -self.SCREEN_HEIGHT / 2:
+            self._paddle_right.setheading(NORTH)
+        self._paddle_right.forward(STEP)
+
+########################################################################################################################
+
+    def start_game(self) -> None:
+        """
+
+        """
+
+        while True:
+            self._move_right_paddle()
+            self._ball.forward(STEP)
+            self._screen.update()
+            sleep(1 / SPEED)
+
+########################################################################################################################
+
     def end_game(self) -> None:
         """
         End the game.
@@ -78,6 +106,7 @@ def run_program() -> None:
     """
 
     game = Pong()
+    game.start_game()
     game.end_game()
 
 
