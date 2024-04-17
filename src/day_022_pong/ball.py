@@ -1,7 +1,8 @@
 from turtle import Turtle, Screen
 from random import randint
 
-from .constants import NORTH, SOUTH
+from .constants import NORTH, SOUTH, WEST, EAST
+from .paddle import Paddle
 
 
 ########################################################################################################################
@@ -13,7 +14,7 @@ class Ball(Turtle):
 
 ########################################################################################################################
 
-    def __init__(self):
+    def __init__(self, paddle_left: Paddle, paddle_right: Paddle):
         """
         Create the pong ball.
         """
@@ -22,6 +23,8 @@ class Ball(Turtle):
         self.color("white")
         self.penup()
         self._screen = Screen()
+        self._paddle_left = paddle_left
+        self._paddle_right = paddle_right
 
 ########################################################################################################################
 
@@ -41,6 +44,7 @@ class Ball(Turtle):
 
         """
 
+        # bounce from top and bottom walls
         if self.pos()[1] > self._screen.window_height() / 2:
             if self.heading() > NORTH:
                 self.setheading(SOUTH - abs(NORTH - self.heading()))
@@ -57,6 +61,23 @@ class Ball(Turtle):
             else:
                 # exactly vertical, make the angle slightly off so the ball is not stuck on the same trajectory
                 self.setheading(randint(NORTH - 5, NORTH + 5))
+        # bounce from paddles
+        elif self.pos()[0] < self._paddle_left.pos()[0] + self.WIDTH and self._paddle_left.bottom_y <= self.pos()[1] <= self._paddle_left.top_y:
+            if self.heading() > WEST:
+                self.setheading(360 - abs(WEST - self.heading()))
+            elif self.heading() < WEST:
+                self.setheading(abs(WEST - self.heading()))
+            else:
+                # exactly horizontal, make the angle slightly off so the ball is not stuck on the same trajectory
+                self.setheading(randint(355, 365) % 360)
+        elif self.pos()[0] > self._paddle_right.pos()[0] - self.WIDTH and self._paddle_right.bottom_y <= self.pos()[1] <= self._paddle_right.top_y:
+            if self.heading() > EAST:
+                self.setheading(WEST - self.heading())
+            elif self.heading() < 360:
+                self.setheading(WEST + (360 - self.heading()))
+            else:
+                # exactly horizontal, make the angle slightly off so the ball is not stuck on the same trajectory
+                self.setheading(randint(WEST - 5, WEST + 5))
 
         self.forward(self.STEP)
         self._screen.update()

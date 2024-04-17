@@ -7,7 +7,9 @@ from .constants import NORTH, SOUTH
 ########################################################################################################################
 
 class Paddle(Turtle):
+    HEIGHT_FACTOR = 4
     WIDTH = 20
+    HEIGHT = WIDTH * HEIGHT_FACTOR
     # number of pixels the paddles move; a step for their movement
     STEP = 10
 
@@ -21,8 +23,30 @@ class Paddle(Turtle):
         super().__init__(shape="square")
         self.color("white")
         self.penup()
-        self.shapesize(1, 4)
+        self.shapesize(1, self.HEIGHT_FACTOR)
         self._screen = Screen()
+
+########################################################################################################################
+
+    @property
+    def top_y(self) -> int:
+        """
+
+        :return:
+        """
+
+        return self.pos()[1] + self.HEIGHT / 2
+
+########################################################################################################################
+
+    @property
+    def bottom_y(self) -> int:
+        """
+
+        :return:
+        """
+
+        return self.pos()[1] - self.HEIGHT / 2
 
 
 ########################################################################################################################

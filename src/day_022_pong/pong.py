@@ -30,7 +30,7 @@ class Pong:
         self._paddle_right = RightPaddle()
 
         self._screen.listen()
-        self._ball = Ball()
+        self._ball = Ball(self._paddle_left, self._paddle_right)
 
 ########################################################################################################################
 
