@@ -1,10 +1,52 @@
 from turtle import Screen, Turtle
+from random import randint
+from time import sleep
+
+
+########################################################################################################################
+
+class Ball(Turtle):
+    WIDTH = 20
+    SPEED = 50
+    STEP = 5
+
+########################################################################################################################
+
+    def __init__(self, screen):
+        """
+        Create the pong ball.
+        """
+
+        super().__init__(shape="circle")
+        self.color("white")
+        self.penup()
+        self._is_moving = False
+
+        self._screen = screen
+
+########################################################################################################################
+
+    def start_moving(self) -> None:
+        """
+        Choose a random direction and move the ball in that direction.
+        """
+
+        self._is_moving = True
+        angle = randint(0, 359)
+        self.left(angle)
+
+        while self._is_moving:
+            self.forward(self.STEP)
+            self._screen.update()
+            sleep(1 / self.SPEED)
 
 
 ########################################################################################################################
 
 class Paddle(Turtle):
     WIDTH = 20
+
+########################################################################################################################
 
     def __init__(self):
         """
@@ -42,6 +84,9 @@ class Pong:
         # try to place the right paddle in the same distance from its edge as is the left one, the screen geometry works
         # weird, that's why there is the 1.4 coefficient
         self._paddle_right.goto(self.SCREEN_WIDTH / 2 - Paddle.WIDTH * 1.4, 0)
+
+        self._ball = Ball(self._screen)
+        self._ball.start_moving()
 
         self._screen.update()
 
