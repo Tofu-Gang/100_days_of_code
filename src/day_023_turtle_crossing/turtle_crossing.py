@@ -10,6 +10,8 @@ class TurtleCrossing:
     SCREEN_WIDTH = 600
     SCREEN_HEIGHT = 600
     FINISH_HEIGHT = 40
+    LEVEL_PADDING_LEFT = 20
+    LEVEL_PADDING_TOP = 40
     SPEED = 50
 
 ########################################################################################################################
@@ -31,7 +33,10 @@ class TurtleCrossing:
         self._screen.update()
 
         self._game_going = True
+        self._level = 1
+        self._level_turtle = Turtle()
         self._draw_finish()
+        self._draw_info()
 
 ########################################################################################################################
 
@@ -54,6 +59,20 @@ class TurtleCrossing:
         turtle.right(90)
         turtle.forward(self.FINISH_HEIGHT)
         turtle.end_fill()
+
+########################################################################################################################
+
+    def _draw_info(self) -> None:
+        """
+
+        """
+
+        self._level_turtle.reset()
+        self._level_turtle.hideturtle()
+        self._level_turtle.penup()
+        self._level_turtle.goto(-self.SCREEN_WIDTH / 2 + self.LEVEL_PADDING_LEFT,
+                                self.SCREEN_HEIGHT / 2 - self.LEVEL_PADDING_TOP)
+        self._level_turtle.write(f"Level: {self._level}", font=("Courier", 20, "bold"))
 
 ########################################################################################################################
 
