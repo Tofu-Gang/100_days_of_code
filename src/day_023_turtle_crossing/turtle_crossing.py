@@ -1,7 +1,9 @@
-from turtle import Screen, Turtle
+from turtle import Screen, Turtle, colormode
 from time import sleep
+from random import randint
 
 from .player import Player
+from .car import Car
 
 
 ########################################################################################################################
@@ -13,6 +15,8 @@ class TurtleCrossing:
     LEVEL_PADDING_LEFT = 20
     LEVEL_PADDING_TOP = 40
     SPEED = 50
+    CAR_STEP_FROM = 2
+    CAR_STEP_TO = 5
 
 ########################################################################################################################
 
@@ -32,8 +36,10 @@ class TurtleCrossing:
         self._screen.onkeypress(self._end_game, "Escape")
         self._screen.tracer(0)
         self._screen.listen()
+        colormode(255)
 
         self._player = Player()
+        self._cars = []
         self._game_going = None
         self._level = None
         self._level_turtle = Turtle()
@@ -86,6 +92,28 @@ class TurtleCrossing:
 
 ########################################################################################################################
 
+    def _add_car(self) -> None:
+        """
+        Create a car at a random vertical position and a random speed.
+        """
+
+        x = int(self.SCREEN_WIDTH / 2) + Car.LENGTH / 2
+        y = randint(int(-self.SCREEN_HEIGHT / 2 + Car.WIDTH),
+                    int(self.SCREEN_HEIGHT / 2 - self.FINISH_HEIGHT - Car.WIDTH))
+        step = randint(self.CAR_STEP_FROM, self.CAR_STEP_TO + self._level)
+        self._cars.append(Car(x, y, step))
+
+########################################################################################################################
+
+    def _create_car_roll(self) -> bool:
+        """
+        :return: True if another car should be created, False otherwise
+        """
+
+        return randint(0, 50) == 0
+
+########################################################################################################################
+
     def start_game(self) -> None:
         """
         Start the game on the first level.
@@ -97,10 +125,17 @@ class TurtleCrossing:
 
         while self._game_going:
             if self._is_player_behind_finish_line():
-                self._level += 1
+                self._finish_level()
                 self._start_level()
+
+            [car.move() for car in self._cars]
+            self._cars = list(filter(lambda car: car.isvisible(), self._cars))
             self._player.move()
+            if self._create_car_roll():
+                self._add_car()
             sleep(1 / self.SPEED)
+
+        self._screen.bye()
 
 ########################################################################################################################
 
@@ -115,13 +150,22 @@ class TurtleCrossing:
 
 ########################################################################################################################
 
+    def _finish_level(self) -> None:
+        """
+        Increment level counter and remove all cars.
+        """
+
+        self._level += 1
+        [car.hideturtle() for car in self._cars]
+
+########################################################################################################################
+
     def _end_game(self) -> None:
         """
         End the game.
         """
 
         self._game_going = False
-        self._screen.bye()
 
 
 ########################################################################################################################
