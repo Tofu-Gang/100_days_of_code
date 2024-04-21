@@ -1,6 +1,9 @@
 from turtle import Turtle, Screen
 from time import sleep
 from random import randint
+from json import loads, dumps
+from os.path import dirname, realpath
+from os import sep
 
 
 ########################################################################################################################
@@ -17,6 +20,7 @@ class Snake:
     WEST = 180
     SOUTH = 270
     STARTING_SNAKE_LENGTH = 3
+    HIGHSCORE_FILENAME = "highscore.json"
 
 ########################################################################################################################
 
@@ -60,6 +64,12 @@ class Snake:
         self._food.speed("fastest")
         self._food.penup()
 
+        try:
+            with open(dirname(realpath(__file__)) + sep + self.HIGHSCORE_FILENAME, "r") as f:
+                self._highscore = loads(f.read())
+        except FileNotFoundError:
+            self._highscore = 0
+
         self._score = 0
         self._info_turtle = Turtle()
 
@@ -90,7 +100,7 @@ class Snake:
         self._info_turtle.penup()
         self._info_turtle.color("white")
         self._info_turtle.goto(0, self.SCREEN_HEIGHT / 2 - self.TURTLE_SQUARE_SIDE * 2)
-        self._info_turtle.write(f"Score: {self._score}", align="center", font=("Courier", 24, "normal"))
+        self._info_turtle.write(f"Score: {self._score}; High score: {self._highscore}", align="center", font=("Courier", 24, "normal"))
 
 ########################################################################################################################
 
@@ -191,6 +201,11 @@ class Snake:
 
         self._info_turtle.goto(0, 0)
         self._info_turtle.write("GAME OVER", align="center", font=("Courier", 24, "normal"))
+
+        if self._score > self._highscore:
+            with open(dirname(realpath(__file__)) + sep + self.HIGHSCORE_FILENAME, "w") as f:
+                f.write(dumps(self._score))
+
         self._screen.exitonclick()
 
 
