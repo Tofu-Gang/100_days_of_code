@@ -1,4 +1,4 @@
-from turtle import Screen
+from turtle import Screen, Turtle
 from time import sleep
 
 from .player import Player
@@ -9,6 +9,7 @@ from .player import Player
 class TurtleCrossing:
     SCREEN_WIDTH = 600
     SCREEN_HEIGHT = 600
+    FINISH_HEIGHT = 40
     SPEED = 50
 
 ########################################################################################################################
@@ -30,6 +31,29 @@ class TurtleCrossing:
         self._screen.update()
 
         self._game_going = True
+        self._draw_finish()
+
+########################################################################################################################
+
+    def _draw_finish(self) -> None:
+        """
+        Draw the finish area.
+        """
+
+        turtle = Turtle()
+        turtle.hideturtle()
+        turtle.penup()
+        turtle.fillcolor("green")
+        turtle.goto(-self.SCREEN_WIDTH / 2, 300)
+        turtle.begin_fill()
+        turtle.forward(self.SCREEN_WIDTH)
+        turtle.right(90)
+        turtle.forward(self.FINISH_HEIGHT)
+        turtle.right(90)
+        turtle.forward(self.SCREEN_WIDTH)
+        turtle.right(90)
+        turtle.forward(self.FINISH_HEIGHT)
+        turtle.end_fill()
 
 ########################################################################################################################
 
