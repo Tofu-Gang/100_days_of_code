@@ -28,6 +28,7 @@ class TurtleCrossing:
         -draw the finish area
         -create level counter
         -create ongoing game flag (escape keypress switches it to False, breaks the main game loop, ending the game)
+        -establish a game loop counter that is used for generating new cars
         """
 
         self._screen = Screen()
@@ -42,6 +43,7 @@ class TurtleCrossing:
         self._cars = []
         self._game_going = None
         self._level = None
+        self._game_loop_counter = None
         self._level_turtle = Turtle()
         self._draw_finish()
 
@@ -114,7 +116,7 @@ class TurtleCrossing:
         x = int(self.SCREEN_WIDTH / 2) + Car.LENGTH / 2
         y = randint(int(-self.SCREEN_HEIGHT / 2 + Car.WIDTH),
                     int(self.SCREEN_HEIGHT / 2 - self.FINISH_HEIGHT - Car.WIDTH))
-        step = randint(self.CAR_STEP_FROM, self.CAR_STEP_TO + self._level)
+        step = randint(self.CAR_STEP_FROM, self.CAR_STEP_TO) + self._level
         self._cars.append(Car(x, y, step))
 
 ########################################################################################################################
@@ -124,7 +126,7 @@ class TurtleCrossing:
         :return: True if another car should be created, False otherwise
         """
 
-        return randint(0, 40) == 0
+        return self._game_loop_counter % 8 == 0
 
 ########################################################################################################################
 
@@ -159,9 +161,11 @@ class TurtleCrossing:
 
         self._game_going = True
         self._level = 1
+        self._game_loop_counter = 0
         self._start_level()
 
         while self._game_going:
+            self._game_loop_counter += 1
             if any([self._is_collision(car) for car in self._cars]):
                 break
 
@@ -172,8 +176,10 @@ class TurtleCrossing:
             [car.move() for car in self._cars]
             self._cars = list(filter(lambda car: car.isvisible(), self._cars))
             self._player.move()
+
             if self._create_car_roll():
                 self._add_car()
+                self._game_loop_counter = 0
             sleep(1 / self.SPEED)
 
         self._draw_game_over()
