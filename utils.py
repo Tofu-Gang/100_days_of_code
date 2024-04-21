@@ -2,8 +2,22 @@ from os import sep, listdir, system, name
 from os.path import dirname, realpath
 from typing import Tuple, Union
 from math import floor
+from random import randint
 
 from constants import EXIT_MESSAGE, SRC_DIR_NAME
+
+
+########################################################################################################################
+
+def random_color() -> tuple[int, int, int]:
+    """
+    :return: random RGB color in a tuple(R, G, B)
+    """
+
+    r = randint(0, 255)
+    g = randint(0, 255)
+    b = randint(0, 255)
+    return (r, g, b)
 
 
 ########################################################################################################################
