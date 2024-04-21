@@ -83,6 +83,20 @@ class TurtleCrossing:
 
 ########################################################################################################################
 
+    def _draw_game_over(self) -> None:
+        """
+
+        """
+
+        turtle = Turtle()
+        turtle.hideturtle()
+        turtle.penup()
+        turtle.goto(0, 0)
+        turtle.write("GAME OVER", align="center", font=("Courier", 50, "bold"))
+        self._screen.update()
+
+########################################################################################################################
+
     def _is_player_behind_finish_line(self) -> bool:
         """
         :return: True if the player is behind the level finish line, False otherwise
@@ -110,7 +124,31 @@ class TurtleCrossing:
         :return: True if another car should be created, False otherwise
         """
 
-        return randint(0, 50) == 0
+        return randint(0, 40) == 0
+
+########################################################################################################################
+
+    def _is_collision(self, car: Car) -> bool:
+        """
+
+        :param car:
+        :return:
+        """
+
+        player_left = self._player.pos()[0] - Player.WIDTH / 2
+        player_right = self._player.pos()[0] + Player.WIDTH / 2
+        player_top = self._player.pos()[1] + Player.WIDTH / 2
+        player_bottom = self._player.pos()[1] - Player.WIDTH / 2
+
+        car_left = car.pos()[0] - Car.LENGTH / 2
+        car_right = car.pos()[0] + Car.LENGTH / 2
+        car_top = car.pos()[1] + Car.WIDTH / 2
+        car_bottom = car.pos()[1] - Car.WIDTH / 2
+
+        return (player_right >= car_left and
+                player_left <= car_right and
+                player_bottom <= car_top and
+                player_top >= car_bottom)
 
 ########################################################################################################################
 
@@ -124,6 +162,9 @@ class TurtleCrossing:
         self._start_level()
 
         while self._game_going:
+            if any([self._is_collision(car) for car in self._cars]):
+                break
+
             if self._is_player_behind_finish_line():
                 self._finish_level()
                 self._start_level()
@@ -135,7 +176,8 @@ class TurtleCrossing:
                 self._add_car()
             sleep(1 / self.SPEED)
 
-        self._screen.bye()
+        self._draw_game_over()
+        self._screen.exitonclick()
 
 ########################################################################################################################
 
