@@ -18,7 +18,12 @@ class TurtleCrossing:
 
     def __init__(self):
         """
-        Set up the screen.
+        Create the game:
+        -set up the screen
+        -create the player turtle
+        -draw the finish area
+        -create level counter
+        -create ongoing game flag (escape keypress switches it to False, breaks the main game loop, ending the game)
         """
 
         self._screen = Screen()
@@ -29,14 +34,10 @@ class TurtleCrossing:
         self._screen.listen()
 
         self._player = Player()
-        self._player.goto(0, -self.SCREEN_HEIGHT / 2 + Player.WIDTH)
-        self._screen.update()
-
-        self._game_going = True
-        self._level = 1
+        self._game_going = None
+        self._level = None
         self._level_turtle = Turtle()
         self._draw_finish()
-        self._draw_info()
 
 ########################################################################################################################
 
@@ -64,7 +65,7 @@ class TurtleCrossing:
 
     def _draw_info(self) -> None:
         """
-
+        Draw the level number.
         """
 
         self._level_turtle.reset()
@@ -76,14 +77,41 @@ class TurtleCrossing:
 
 ########################################################################################################################
 
-    def start_game(self) -> None:
+    def _is_player_behind_finish_line(self) -> bool:
         """
-        Start the game.
+        :return: True if the player is behind the level finish line, False otherwise
         """
 
+        return self._player.pos()[1] >= self.SCREEN_HEIGHT / 2 - self.FINISH_HEIGHT - Player.WIDTH / 2
+
+########################################################################################################################
+
+    def start_game(self) -> None:
+        """
+        Start the game on the first level.
+        """
+
+        self._game_going = True
+        self._level = 1
+        self._start_level()
+
         while self._game_going:
+            if self._is_player_behind_finish_line():
+                self._level += 1
+                self._start_level()
             self._player.move()
             sleep(1 / self.SPEED)
+
+########################################################################################################################
+
+    def _start_level(self) -> None:
+        """
+        Move player to the starting position and draw the new level number.
+        """
+
+        self._player.goto(0, -self.SCREEN_HEIGHT / 2 + Player.WIDTH)
+        self._draw_info()
+        self._screen.update()
 
 ########################################################################################################################
 
