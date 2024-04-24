@@ -1,5 +1,6 @@
 from turtle import Screen, Turtle, shape, mainloop, bye
 from os.path import join, dirname, realpath
+from typing import Union
 from pandas import read_csv
 from time import sleep
 
@@ -41,8 +42,18 @@ class US_States:
         self._clear_info()
 
         self._states_data = read_csv(self.STATES_FILE_PATH)
-        self._score = 0
+        self._correct_guesses = []
         mainloop()
+
+########################################################################################################################
+
+    @property
+    def score(self) -> int:
+        """
+        :return: player score (number of correct guesses so far)
+        """
+
+        return len(self._correct_guesses)
 
 ########################################################################################################################
 
@@ -57,38 +68,87 @@ class US_States:
 
 ########################################################################################################################
 
+    def _draw_wrong_guess(self) -> None:
+        """
+        Inform the user about their wrong guess.
+        """
+
+        self._info_turtle.color("red")
+        self._info_turtle.goto(0, 0)
+        self._info_turtle.write("WRONG!", align="center", font=("Courier", 40, "bold"))
+        sleep(2)
+        self._clear_info()
+
+########################################################################################################################
+
+    def _draw_win(self) -> None:
+        """
+        Inform the user about winning the game.
+        """
+
+        self._info_turtle.color("red")
+        self._info_turtle.goto(0, 0)
+        self._info_turtle.write("YOU WIN!", align="center", font=("Courier", 40, "bold"))
+
+########################################################################################################################
+
+    def _write_state_name(self, x: int, y: int, state_name: str) -> None:
+        """
+        Write a state name in the map.
+
+        :param x: horizontal position of the label
+        :param y: vertical position of the label
+        :param state_name: state name
+        """
+
+        self._state_name_turtle.goto(x, y)
+        self._state_name_turtle.write(state_name, font=("Courier", 12, "bold"))
+
+########################################################################################################################
+
+    def _get_user_guess(self) -> Union[str, None]:
+        """
+        Show a popup window, let the user guess a US state name.
+
+        :return: user guess in Title case or None if the user closed the window manually
+        """
+
+        try:
+            return self._screen.textinput(title=f"{self.score}/{len(self._states_data)} States Correct",
+                                          prompt="What's another state's name?").title()
+        except AttributeError:
+            return None
+
+########################################################################################################################
+
     def _check_user_state_name(self, *_) -> None:
         """
+        Show popup window where the user can guess a US state name. Correct guess results in revealing the state label
+        in the map; wrong guess causes an information which disappears after some time. If all the states are revealed,
+        inform the user and do nothing further.
 
-        :param _:
+        :param _: since this is connected to Screen.onscreenclick(), there are unused params with x and y mouse
+        positions where the mouse press event occurred
         """
 
-        if self._score < len(self._states_data):
-            state_name = self._screen.textinput(title=f"{self._score}/{len(self._states_data)} States Correct",
-                                                prompt="What's another state's name?")
+        if self.score < len(self._states_data):
+            state_name = self._get_user_guess()
             # do nothing if the user closed the popup window (in which case the state_name IS None)
             if state_name is not None:
                 state_name = state_name.title()
                 row = self._states_data[self._states_data["state"] == state_name]
 
-                if len(row) == 1:
+                if len(row) == 1 and state_name not in self._correct_guesses:
                     # correct guess
-                    self._state_name_turtle.goto(row.x.item(), row.y.item())
-                    self._state_name_turtle.write(state_name, font=("Courier", 12, "bold"))
-                    self._score += 1
+                    self._write_state_name(row.x.item(), row.y.item(), state_name)
+                    self._correct_guesses.append(state_name)
 
-                    if self._score == len(self._states_data):
+                    if self.score == len(self._states_data):
                         # all states guessed correctly
-                        self._info_turtle.color("red")
-                        self._info_turtle.goto(0, 0)
-                        self._info_turtle.write("YOU WIN!", align="center", font=("Courier", 40, "bold"))
+                        self._draw_win()
                 else:
                     # wrong guess
-                    self._info_turtle.color("red")
-                    self._info_turtle.goto(0, 0)
-                    self._info_turtle.write("WRONG!", align="center", font=("Courier", 40, "bold"))
-                    sleep(2)
-                    self._clear_info()
+                    self._draw_wrong_guess()
         # for some reason pressing the escape key does no longer work after at least one mouse key press in the window
         # and this function call, this ensures the escape key connection with turtle.bye() again
         self._screen.listen()
@@ -98,7 +158,7 @@ class US_States:
 
 def run_program() -> None:
     """
-
+    Play the US states guessing game.
     """
 
     US_States()
