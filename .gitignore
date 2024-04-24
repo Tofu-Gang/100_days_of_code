@@ -160,5 +160,9 @@ cython_debug/
 #.idea/
 
 # other
+# day_020, day_021 Snake Game
 highscore.json
+# day_024 Mail Merge
 Output/
+# day_025 US States
+states_to_learn.csv

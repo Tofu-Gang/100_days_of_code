@@ -1,7 +1,7 @@
 from turtle import Screen, Turtle, shape, mainloop, bye
 from os.path import join, dirname, realpath
 from typing import Union
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 from time import sleep
 
 
@@ -10,8 +10,10 @@ from time import sleep
 class US_States:
     MAP_FILE_NAME = "blank_states_img.gif"
     STATES_FILE_NAME = "50_states.csv"
+    MISSING_STATES_FILE_NAME = "states_to_learn.csv"
     MAP_FILE_PATH = join(dirname(realpath(__file__)), MAP_FILE_NAME)
     STATES_FILE_PATH = join(dirname(realpath(__file__)), STATES_FILE_NAME)
+    MISSING_STATES_FILE_PATH = join(dirname(realpath(__file__)), MISSING_STATES_FILE_NAME)
     MAP_WIDTH = 725
     MAP_HEIGHT = 491
 
@@ -31,7 +33,7 @@ class US_States:
         shape(self.MAP_FILE_PATH)
 
         self._screen.onscreenclick(self._check_user_state_name)
-        self._screen.onkeypress(bye, "Escape")
+        self._screen.onkeypress(self._exit, "Escape")
         self._screen.listen()
 
         self._state_name_turtle = Turtle()
@@ -48,12 +50,22 @@ class US_States:
 ########################################################################################################################
 
     @property
-    def score(self) -> int:
+    def _score(self) -> int:
         """
         :return: player score (number of correct guesses so far)
         """
 
         return len(self._correct_guesses)
+
+########################################################################################################################
+
+    @property
+    def _is_win(self) -> bool:
+        """
+        :return: True if the game is win, False otherwise
+        """
+
+        return self._score == len(self._states_data)
 
 ########################################################################################################################
 
@@ -102,7 +114,7 @@ class US_States:
         """
 
         self._state_name_turtle.goto(x, y)
-        self._state_name_turtle.write(state_name, font=("Courier", 12, "bold"))
+        self._state_name_turtle.write(state_name, font=("Courier", 8, "bold"))
 
 ########################################################################################################################
 
@@ -114,7 +126,7 @@ class US_States:
         """
 
         try:
-            return self._screen.textinput(title=f"{self.score}/{len(self._states_data)} States Correct",
+            return self._screen.textinput(title=f"{self._score}/{len(self._states_data)} States Correct",
                                           prompt="What's another state's name?").title()
         except AttributeError:
             return None
@@ -131,7 +143,7 @@ class US_States:
         positions where the mouse press event occurred
         """
 
-        if self.score < len(self._states_data):
+        if not self._is_win:
             state_name = self._get_user_guess()
             # do nothing if the user closed the popup window (in which case the state_name IS None)
             if state_name is not None:
@@ -143,7 +155,7 @@ class US_States:
                     self._write_state_name(row.x.item(), row.y.item(), state_name)
                     self._correct_guesses.append(state_name)
 
-                    if self.score == len(self._states_data):
+                    if self._is_win:
                         # all states guessed correctly
                         self._draw_win()
                 else:
@@ -152,6 +164,20 @@ class US_States:
         # for some reason pressing the escape key does no longer work after at least one mouse key press in the window
         # and this function call, this ensures the escape key connection with turtle.bye() again
         self._screen.listen()
+
+########################################################################################################################
+
+    def _exit(self) -> None:
+        """
+        Exit the game. Save a csv file with all the US states that weren't guessed.
+        """
+
+        if not self._is_win:
+            DataFrame({
+                "Missing States": tuple(filter(lambda state_name: state_name not in self._correct_guesses,
+                                               self._states_data["state"].to_list()))
+            }).to_csv(self.MISSING_STATES_FILE_PATH)
+        bye()
 
 
 ########################################################################################################################
