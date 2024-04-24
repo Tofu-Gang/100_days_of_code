@@ -16,6 +16,7 @@ class US_States:
     MISSING_STATES_FILE_PATH = join(dirname(realpath(__file__)), MISSING_STATES_FILE_NAME)
     MAP_WIDTH = 725
     MAP_HEIGHT = 491
+    INFO_FONT_SIZE = 30
 
 ########################################################################################################################
     def __init__(self):
@@ -87,7 +88,22 @@ class US_States:
 
         self._info_turtle.color("red")
         self._info_turtle.goto(0, 0)
-        self._info_turtle.write("WRONG!", align="center", font=("Courier", 40, "bold"))
+        self._info_turtle.write("WRONG!", align="center", font=("Courier", self.INFO_FONT_SIZE, "bold"))
+        sleep(2)
+        self._clear_info()
+
+########################################################################################################################
+
+    def _draw_already_guessed(self) -> None:
+        """
+        Inform the user about guessing already revealed state.
+        """
+
+        self._info_turtle.color("red")
+        self._info_turtle.goto(0, 0)
+        self._info_turtle.write("YOU ALREADY GUESSED THAT!",
+                                align="center",
+                                font=("Courier", self.INFO_FONT_SIZE, "bold"))
         sleep(2)
         self._clear_info()
 
@@ -100,7 +116,7 @@ class US_States:
 
         self._info_turtle.color("red")
         self._info_turtle.goto(0, 0)
-        self._info_turtle.write("YOU WIN!", align="center", font=("Courier", 40, "bold"))
+        self._info_turtle.write("YOU WIN!", align="center", font=("Courier", self.INFO_FONT_SIZE, "bold"))
 
 ########################################################################################################################
 
@@ -150,14 +166,18 @@ class US_States:
                 state_name = state_name.title()
                 row = self._states_data[self._states_data["state"] == state_name]
 
-                if len(row) == 1 and state_name not in self._correct_guesses:
-                    # correct guess
-                    self._write_state_name(row.x.item(), row.y.item(), state_name)
-                    self._correct_guesses.append(state_name)
+                if len(row) == 1:
+                    if state_name in self._correct_guesses:
+                        # already guessed that
+                        self._draw_already_guessed()
+                    else:
+                        # correct guess
+                        self._write_state_name(row.x.item(), row.y.item(), state_name)
+                        self._correct_guesses.append(state_name)
 
-                    if self._is_win:
-                        # all states guessed correctly
-                        self._draw_win()
+                        if self._is_win:
+                            # all states guessed correctly
+                            self._draw_win()
                 else:
                     # wrong guess
                     self._draw_wrong_guess()
