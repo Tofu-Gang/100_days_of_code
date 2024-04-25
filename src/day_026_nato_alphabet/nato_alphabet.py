@@ -14,10 +14,14 @@ class NatoAlphabet:
 
     def __init__(self):
         """
-        Read NATO alphabet from csv file.
+        Read NATO alphabet from csv file and save it as a dict where keys are alphabet letters and values are codes for
+        respective letters.
         """
 
-        self._nato_alphabet = read_csv(self.NATO_ALPHABET_FILE_PATH)
+        self._nato_alphabet = {
+            row[self.LETTER_COLUMN]: row[self.CODE_COLUMN]
+            for (index, row) in read_csv(self.NATO_ALPHABET_FILE_PATH).iterrows()
+        }
 
 ########################################################################################################################
 
@@ -27,7 +31,7 @@ class NatoAlphabet:
         :return: a corresponding code from the NATO alphabet or None if there is no code for the input
         """
 
-        return self._nato_alphabet[self._nato_alphabet[self.LETTER_COLUMN] == letter.upper()][self.CODE_COLUMN].item()
+        return self._nato_alphabet[letter.upper()]
 
 ########################################################################################################################
 
@@ -50,6 +54,5 @@ def run_program() -> None:
     word = input("Enter a word: ")
     nato_alphabet = NatoAlphabet()
     print(", ".join(nato_alphabet.get_word_codes(word)))
-
 
 ########################################################################################################################
