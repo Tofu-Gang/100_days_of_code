@@ -1,4 +1,4 @@
-from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button
+from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END
 from os.path import join, dirname, realpath
 
 
@@ -6,6 +6,7 @@ from os.path import join, dirname, realpath
 
 class PasswordManager:
     _BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "logo.png")
+    _OUT_FILE_PATH = join(dirname(realpath(__file__)), "data.txt")
     _WINDOW_PADDING = 50
     _LOGO_WIDTH = 200
     _LOGO_HEIGHT = 200
@@ -18,6 +19,7 @@ class PasswordManager:
         """
 
         self._set_display()
+        self._set_controls()
         self._window.mainloop()
 
 ########################################################################################################################
@@ -42,11 +44,46 @@ class PasswordManager:
         Label(text="Email/Username:").grid(row=2, column=0)
         Label(text="Password:").grid(row=3, column=0)
 
-        Entry().grid(row=1, column=1, columnspan=2, sticky="EW")
-        Entry().grid(row=2, column=1, columnspan=2, sticky="EW")
-        Entry().grid(row=3, column=1, sticky="EW")
-        Button(text="Generate Password").grid(row=3, column=2)
-        Button(text="Add").grid(row=4, column=1, columnspan=2, sticky="EW")
+########################################################################################################################
+
+    def _set_controls(self) -> None:
+        """
+
+        """
+
+        self._website_entry = Entry()
+        self._website_entry.grid(row=1, column=1, columnspan=2, sticky="EW")
+        self._website_entry.focus()
+        self._username_entry = Entry()
+        self._username_entry.grid(row=2, column=1, columnspan=2, sticky="EW")
+        self._username_entry.insert(0, "borts@bootus.com")
+        self._password_entry = Entry()
+        self._password_entry.grid(row=3, column=1, sticky="EW")
+        Button(text="Generate Password", command=self._generate_password).grid(row=3, column=2)
+        Button(text="Add", command=self._add_password).grid(row=4, column=1, columnspan=2, sticky="EW")
+
+########################################################################################################################
+
+    def _generate_password(self) -> None:
+        """
+
+        """
+
+        pass
+
+########################################################################################################################
+
+    def _add_password(self) -> None:
+        """
+
+        """
+
+        with open(self._OUT_FILE_PATH, "a") as f:
+            f.write(f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n")
+
+        self._website_entry.delete(0, END)
+        self._password_entry.delete(0, END)
+        self._website_entry.focus()
 
 
 ########################################################################################################################
