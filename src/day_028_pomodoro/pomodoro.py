@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas, PhotoImage
+from tkinter import Tk, Canvas, PhotoImage, Label, Button
 from os.path import join, dirname, realpath
 
 
@@ -10,7 +10,8 @@ class Pomodoro:
     RED = "#e7305b"
     GREEN = "#9bdeac"
     YELLOW = "#f7f5dd"
-    FONT = ("Courier", 27, "bold")
+    COUNTER_FONT = ("Courier", 27, "bold")
+    INFO_FONT = ("Courier", 40, "bold")
     WORK_MIN = 25
     SHORT_BREAK_MIN = 5
     LONG_BREAK_MIN = 20
@@ -21,34 +22,36 @@ class Pomodoro:
 
     def __init__(self):
         """
-        Create the main window, set up background picture and the main counter.
+        Create the instance variables and call the respective function to set them up. First do this for the passive,
+        display widgets (background image, labels, etc...) and then for controls (buttons).
+        Finally, show the main window.
         """
 
         self._window = Tk()
-        self._set_window()
         self._canvas = Canvas()
         # could be set as a local variable, but I guess the garbage collector deletes it and then the image won't get
         # displayed at all
         self._tomato_img = PhotoImage(file=self.BG_IMAGE_FILE_PATH)
-        self._set_canvas()
+        self._info_label = Label()
+        self._progress_label = Label()
+        self._set_display()
+
+        self._start_button = Button()
+        self._reset_button = Button()
+        self._set_controls()
+
         self._window.mainloop()
 
 ########################################################################################################################
 
-    def _set_window(self) -> None:
+    def _set_display(self) -> None:
         """
-        Set the title, background color and geometry of the main window.
+        Create the main window with a background image. Set up the colors and geometry. Create the main info label above
+        the tomato picture and progress label (checkmarks) between the buttons.
         """
 
         self._window.title("Pomodoro")
         self._window.configure(padx=self.WINDOW_PAD_X, pady=self.WINDOW_PAD_Y, bg=self.YELLOW)
-
-########################################################################################################################
-
-    def _set_canvas(self) -> None:
-        """
-        Set the background color and picture and its geometry. Set up the main clock counter.
-        """
 
         tomato_width = self._tomato_img.width()
         tomato_height = self._tomato_img.height()
@@ -58,10 +61,46 @@ class Pomodoro:
         counter_label_pos_x = tomato_pos_x
         counter_label_pos_y = tomato_pos_y + 18
 
-        self._canvas.configure(width=tomato_width, height=tomato_height, bg=self.YELLOW, highlightthickness=False)
+        self._canvas.configure(width=tomato_width, height=tomato_height, bg=self.YELLOW, highlightthickness=0)
         self._canvas.create_image(tomato_pos_x, tomato_pos_y, image=self._tomato_img)
-        self._canvas.create_text(counter_label_pos_x, counter_label_pos_y, text="00:00", fill="white", font=self.FONT)
-        self._canvas.pack()
+        self._canvas.create_text(counter_label_pos_x, counter_label_pos_y,
+                                 text="00:00", fill="white", font=self.COUNTER_FONT)
+        self._canvas.grid(row=1, column=1)
+
+        self._info_label.configure(text="Timer", fg=self.GREEN, bg=self.YELLOW, font=self.INFO_FONT)
+        self._info_label.grid(row=0, column=1)
+        self._progress_label.configure(text="\u2714", fg=self.GREEN, bg=self.YELLOW)
+        self._progress_label.grid(row=3, column=1)
+
+########################################################################################################################
+
+    def _set_controls(self) -> None:
+        """
+        Create the start and reset buttons, connect them to their respective methods and place them in the main window.
+        """
+
+        self._start_button.configure(text="Start", command=self._start, highlightthickness=0)
+        self._start_button.grid(row=2, column=0)
+        self._reset_button.configure(text="Reset", command=self._reset, highlightthickness=0)
+        self._reset_button.grid(row=2, column=2)
+
+########################################################################################################################
+
+    def _start(self) -> None:
+        """
+
+        """
+
+        pass
+
+########################################################################################################################
+
+    def _reset(self) -> None:
+        """
+
+        """
+
+        pass
 
 
 ########################################################################################################################
