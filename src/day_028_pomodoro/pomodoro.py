@@ -2,12 +2,13 @@ from tkinter import Tk, Canvas, PhotoImage, Label, Button
 from os.path import join, dirname, realpath
 from datetime import datetime, timedelta
 
+from .pomodoro_engine import PomodoroEngine
+
 
 ########################################################################################################################
 
 class Pomodoro:
-    BG_IMAGE_FILE_NAME = "tomato.png"
-    BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), BG_IMAGE_FILE_NAME)
+    BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "tomato.png")
     PINK = "#e2979c"
     RED = "#e7305b"
     GREEN = "#9bdeac"
@@ -16,44 +17,19 @@ class Pomodoro:
     INFO_FONT = ("Courier", 40, "bold")
     WINDOW_PAD_X = 100
     WINDOW_PAD_Y = 50
-    WORK_PHASE_LABEL = "Work"
-    BREAK_PHASE_LABEL = "Break"
-    LABEL_KEY = "LABEL"
-    TIME_KEY = "TIME"
-    WORK_MIN = 25
-    SHORT_BREAK_MIN = 5
-    LONG_BREAK_MIN = 20
-
-    WORK_PHASE = {
-        LABEL_KEY: WORK_PHASE_LABEL,
-        TIME_KEY: WORK_MIN
-    }
-    SHORT_BREAK_PHASE = {
-        LABEL_KEY: BREAK_PHASE_LABEL,
-        TIME_KEY: SHORT_BREAK_MIN
-    }
-    LONG_BREAK_PHASE = {
-        LABEL_KEY: BREAK_PHASE_LABEL,
-        TIME_KEY: LONG_BREAK_MIN
-    }
-    PHASES = (WORK_PHASE,
-              SHORT_BREAK_PHASE,
-              WORK_PHASE,
-              SHORT_BREAK_PHASE,
-              WORK_PHASE,
-              SHORT_BREAK_PHASE,
-              WORK_PHASE,
-              LONG_BREAK_PHASE)
 
 ########################################################################################################################
 
     def __init__(self):
         """
-        Set up the display widgets and window controls. Finally, show the main window.
+        Set up the display widgets and window controls. Create the routine engine which controls the routine flow.
+        Finally, show the main window.
         """
 
+        self._engine = PomodoroEngine()
         self._set_display()
         self._set_controls()
+        self._update()
         self._window.mainloop()
 
 ########################################################################################################################
@@ -65,7 +41,6 @@ class Pomodoro:
         """
 
         self._window = Tk()
-        self._window.title("Pomodoro")
         self._window.configure(padx=self.WINDOW_PAD_X, pady=self.WINDOW_PAD_Y, bg=self.YELLOW)
 
         # could be set as a local variable, but I guess the garbage collector deletes it and then the image won't get
@@ -85,7 +60,7 @@ class Pomodoro:
                                                        fill="white", font=self.COUNTER_FONT)
         self._canvas.grid(row=1, column=1)
 
-        self._info_label = Label(text="Pomodoro", fg=self.GREEN, bg=self.YELLOW, font=self.INFO_FONT)
+        self._info_label = Label(bg=self.YELLOW, font=self.INFO_FONT)
         self._info_label.grid(row=0, column=1)
         self._progress_label = Label(fg=self.GREEN, bg=self.YELLOW)
         self._progress_label.grid(row=3, column=1)
@@ -109,18 +84,18 @@ class Pomodoro:
         Go to the first phase of the pomodoro routine. Start the timer.
         """
 
-        self._phase = 0
-        self._update_info()
+        self._engine.start()
         self._set_counter()
 
 ########################################################################################################################
 
     def _reset(self) -> None:
         """
-
+        Stop the pomodoro routine.
         """
 
-        pass
+        self._engine.reset()
+        self._update()
 
 ########################################################################################################################
 
@@ -129,48 +104,50 @@ class Pomodoro:
         Set the counter to the specified number of minutes. Count down second by second.
         """
 
-        self._counter_time = datetime.now().replace(minute=0, second=self.PHASES[self._phase][self.TIME_KEY])
-        self._update_counter()
-        self._update_info()
+        self._counter_time = datetime.now().replace(minute=self._engine.phase_duration, second=0)
+        self._update()
         self._window.after(1000, self._count_down)
-
-########################################################################################################################
-
-    def _update_counter(self) -> None:
-        """
-        Update the counter time in the main window.
-        """
-
-        self._canvas.itemconfig(self._counter_label, text=self._counter_time.strftime("%M:%S"))
-
-########################################################################################################################
-
-    def _update_info(self) -> None:
-        """
-        Update the label which displays the name of the current pomodoro phase and the progress label.
-        """
-
-        self._info_label.configure(text=self.PHASES[self._phase][self.LABEL_KEY])
-        self._progress_label.configure(text="\u2714" * self._phase)
 
 ########################################################################################################################
 
     def _count_down(self) -> None:
         """
-        Subtract one second from the counter until it is on zero minutes and seconds.
+        Subtract one second from the counter. Control the pomodoro routine after the counter hits zero.
         """
 
         self._counter_time -= timedelta(seconds=1)
-        self._update_counter()
+        self._update()
 
-        if self._counter_time.minute != 0 or self._counter_time.second != 0:
-            # counter above 00:00, continue
-            self._window.after(1000, self._count_down)
+        if self._engine.is_running:
+            if self._counter_time.minute != 0 or self._counter_time.second != 0:
+                # counter above 00:00, continue
+                self._window.after(1000, self._count_down)
+            else:
+                # counter reached 00:00, move to the next phase
+                self._engine.next_phase()
+
+                if self._engine.is_running:
+                    self._window.after(1000, self._set_counter)
+                else:
+                    self._window.after(1000, self._update)
+
+########################################################################################################################
+
+    def _update(self) -> None:
+        """
+        Update the whole window.
+        """
+
+        if self._engine.is_running:
+            self._canvas.itemconfig(self._counter_label, text=self._counter_time.strftime("%M:%S"))
+            self._window.title(f"{self._engine.phase_label} {self._counter_time.strftime('%M:%S')}")
+            self._info_label.configure(text=self._engine.phase_label, fg=self.GREEN if self._engine.is_work_phase else self.PINK)
         else:
-            # counter reached 00:00, move to the next phase
-            self._phase += 1
-            self._phase %= len(self.PHASES)
-            self._window.after(1000, self._set_counter)
+            self._canvas.itemconfig(self._counter_label, text="")
+            self._window.title(self._engine.phase_label)
+            self._info_label.configure(text=self._engine.phase_label, fg=self.PINK)
+
+        self._progress_label.configure(text="\u2714" * self._engine.work_phases_complete)
 
 
 ########################################################################################################################
