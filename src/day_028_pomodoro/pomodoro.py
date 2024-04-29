@@ -8,15 +8,15 @@ from .pomodoro_engine import PomodoroEngine
 ########################################################################################################################
 
 class Pomodoro:
-    BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "tomato.png")
-    PINK = "#e2979c"
-    RED = "#e7305b"
-    GREEN = "#9bdeac"
-    YELLOW = "#f7f5dd"
-    COUNTER_FONT = ("Courier", 27, "bold")
-    INFO_FONT = ("Courier", 40, "bold")
-    WINDOW_PAD_X = 100
-    WINDOW_PAD_Y = 50
+    _BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "tomato.png")
+    _PINK = "#e2979c"
+    _RED = "#e7305b"
+    _GREEN = "#9bdeac"
+    _YELLOW = "#f7f5dd"
+    _COUNTER_FONT = ("Courier", 27, "bold")
+    _INFO_FONT = ("Courier", 30, "bold")
+    _WINDOW_PAD_X = 100
+    _WINDOW_PAD_Y = 50
 
 ########################################################################################################################
 
@@ -41,11 +41,11 @@ class Pomodoro:
         """
 
         self._window = Tk()
-        self._window.configure(padx=self.WINDOW_PAD_X, pady=self.WINDOW_PAD_Y, bg=self.YELLOW)
+        self._window.configure(padx=self._WINDOW_PAD_X, pady=self._WINDOW_PAD_Y, bg=self._YELLOW)
 
         # could be set as a local variable, but I guess the garbage collector deletes it and then the image won't get
         # displayed at all
-        self._tomato_img = PhotoImage(file=self.BG_IMAGE_FILE_PATH)
+        self._tomato_img = PhotoImage(file=self._BG_IMAGE_FILE_PATH)
         tomato_width = self._tomato_img.width()
         tomato_height = self._tomato_img.height()
         tomato_pos_x = tomato_width / 2
@@ -54,15 +54,15 @@ class Pomodoro:
         counter_label_pos_x = tomato_pos_x
         counter_label_pos_y = tomato_pos_y + 18
 
-        self._canvas = Canvas(width=tomato_width, height=tomato_height, bg=self.YELLOW, highlightthickness=0)
+        self._canvas = Canvas(width=tomato_width, height=tomato_height, bg=self._YELLOW, highlightthickness=0)
         self._canvas.create_image(tomato_pos_x, tomato_pos_y, image=self._tomato_img)
         self._counter_label = self._canvas.create_text(counter_label_pos_x, counter_label_pos_y,
-                                                       fill="white", font=self.COUNTER_FONT)
+                                                       fill="white", font=self._COUNTER_FONT)
         self._canvas.grid(row=1, column=1)
 
-        self._info_label = Label(bg=self.YELLOW, font=self.INFO_FONT)
+        self._info_label = Label(bg=self._YELLOW, font=self._INFO_FONT)
         self._info_label.grid(row=0, column=1)
-        self._progress_label = Label(fg=self.GREEN, bg=self.YELLOW)
+        self._progress_label = Label(fg=self._GREEN, bg=self._YELLOW)
         self._progress_label.grid(row=3, column=1)
 
 ########################################################################################################################
@@ -125,6 +125,8 @@ class Pomodoro:
             else:
                 # counter reached 00:00, move to the next phase
                 self._engine.next_phase()
+                self._window.attributes('-topmost', 1)
+                self._window.attributes('-topmost', 0)
 
                 if self._engine.is_running:
                     self._window.after(1000, self._set_counter)
@@ -141,11 +143,12 @@ class Pomodoro:
         if self._engine.is_running:
             self._canvas.itemconfig(self._counter_label, text=self._counter_time.strftime("%M:%S"))
             self._window.title(f"{self._engine.phase_label} {self._counter_time.strftime('%M:%S')}")
-            self._info_label.configure(text=self._engine.phase_label, fg=self.GREEN if self._engine.is_work_phase else self.PINK)
+            self._info_label.configure(text=self._engine.phase_label,
+                                       fg=self._GREEN if self._engine.is_work_phase else self._PINK)
         else:
             self._canvas.itemconfig(self._counter_label, text="")
             self._window.title(self._engine.phase_label)
-            self._info_label.configure(text=self._engine.phase_label, fg=self.PINK)
+            self._info_label.configure(text=self._engine.phase_label, fg=self._PINK)
 
         self._progress_label.configure(text="\u2714" * self._engine.work_phases_complete)
 
