@@ -1,5 +1,9 @@
-from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END
+from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END, messagebox
 from os.path import join, dirname, realpath
+from random import randint
+from pyperclip import copy
+
+from utils import generate_password
 
 
 ########################################################################################################################
@@ -15,7 +19,7 @@ class PasswordManager:
 
     def __init__(self):
         """
-
+        Create and show the main window.
         """
 
         self._set_display()
@@ -26,7 +30,7 @@ class PasswordManager:
 
     def _set_display(self) -> None:
         """
-
+        Create and set up the main window, the logo and the entry labels.
         """
 
         self._window = Tk()
@@ -48,7 +52,8 @@ class PasswordManager:
 
     def _set_controls(self) -> None:
         """
-
+        Set up the website, username and password entries. Furthermore, create generate and add password buttons and
+        connect them to their respective methods.
         """
 
         self._website_entry = Entry()
@@ -66,31 +71,47 @@ class PasswordManager:
 
     def _generate_password(self) -> None:
         """
-
+        Generate a random password and add it to the password entry. Copy it to the clipboard.
         """
 
-        pass
+        self._password_entry.delete(0, END)
+        password = generate_password(letters_count=randint(8, 10),
+                                     numbers_count=randint(2, 4),
+                                     symbols_count=randint(2, 4))
+        self._password_entry.insert(0, password)
+        copy(password)
 
 ########################################################################################################################
 
     def _add_password(self) -> None:
         """
-
+        Check if all three entries are not empty and that the user agrees with saving this entry to the output file.
+        If all is ok, save the password entry to the output file and prepare the window for the next password.
         """
 
-        with open(self._OUT_FILE_PATH, "a") as f:
-            f.write(f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n")
+        if (len(self._website_entry.get()) == 0 or
+                len(self._username_entry.get()) == 0 or
+                len(self._password_entry.get()) == 0):
+            messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
+        else:
+            output_line = f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n"
+            is_ok = messagebox.askyesno(title=self._website_entry.get(), message=f"These are the details entered: \n"
+                                                                                 f"{output_line}\n"
+                                                                                 f"Is it ok to save?")
+            if is_ok:
+                with open(self._OUT_FILE_PATH, "a") as f:
+                    f.write(output_line)
 
-        self._website_entry.delete(0, END)
-        self._password_entry.delete(0, END)
-        self._website_entry.focus()
+                self._website_entry.delete(0, END)
+                self._password_entry.delete(0, END)
+                self._website_entry.focus()
 
 
 ########################################################################################################################
 
 def run_program() -> None:
     """
-
+    Run the password manager.
     """
 
     PasswordManager()
