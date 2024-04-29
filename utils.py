@@ -2,9 +2,28 @@ from os import sep, listdir, system, name
 from os.path import dirname, realpath
 from typing import Tuple, Union
 from math import floor
-from random import randint
+from random import randint, choice, shuffle
 
-from constants import EXIT_MESSAGE, SRC_DIR_NAME
+from constants import EXIT_MESSAGE, SRC_DIR_NAME, LETTERS, NUMBERS, SYMBOLS
+
+
+########################################################################################################################
+
+def generate_password(letters_count: int, numbers_count: int, symbols_count: int) -> str:
+    """
+    :param letters_count: how many letters in the password
+    :param numbers_count: how many numbers in the password
+    :param symbols_count: how many symbols in the password
+    :return: a random password with specified amounts of letters, numbers and symbols
+    """
+
+    letters = list(choice(LETTERS) for _ in range(letters_count))
+    numbers = list(choice(NUMBERS) for _ in range(numbers_count))
+    symbols = list(choice(SYMBOLS) for _ in range(symbols_count))
+
+    password = letters + numbers + symbols
+    shuffle(password)
+    return "".join(password)
 
 
 ########################################################################################################################
