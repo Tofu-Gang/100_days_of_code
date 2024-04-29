@@ -1,5 +1,6 @@
 from tkinter import Tk, Canvas, PhotoImage, Label, Button
 from os.path import join, dirname, realpath
+from datetime import datetime, timedelta
 
 
 ########################################################################################################################
@@ -54,8 +55,8 @@ class Pomodoro:
 
         self._canvas = Canvas(width=tomato_width, height=tomato_height, bg=self.YELLOW, highlightthickness=0)
         self._canvas.create_image(tomato_pos_x, tomato_pos_y, image=self._tomato_img)
-        self._canvas.create_text(counter_label_pos_x, counter_label_pos_y,
-                                 text="00:00", fill="white", font=self.COUNTER_FONT)
+        self._counter_label = self._canvas.create_text(counter_label_pos_x, counter_label_pos_y,
+                                                       fill="white", font=self.COUNTER_FONT)
         self._canvas.grid(row=1, column=1)
 
         self._info_label = Label(text="Timer", fg=self.GREEN, bg=self.YELLOW, font=self.INFO_FONT)
@@ -79,10 +80,10 @@ class Pomodoro:
 
     def _start(self) -> None:
         """
-
+        Start the counter on work period.
         """
 
-        pass
+        self._set_counter(self.WORK_MIN)
 
 ########################################################################################################################
 
@@ -92,6 +93,41 @@ class Pomodoro:
         """
 
         pass
+
+########################################################################################################################
+
+    def _set_counter(self, minutes: int) -> None:
+        """
+        Set the counter to the specified number of minutes. Count down second by second.
+
+        :param minutes: number of minutes to count down second by second
+        """
+
+        self._counter_time = datetime.now().replace(minute=minutes, second=0)
+        self._update_counter()
+        self._window.after(1000, self._count_down)
+
+########################################################################################################################
+
+    def _update_counter(self) -> None:
+        """
+        Update the counter time in the main window.
+        """
+
+        self._canvas.itemconfig(self._counter_label, text=self._counter_time.strftime("%M:%S"))
+
+########################################################################################################################
+
+    def _count_down(self) -> None:
+        """
+        Subtract one second from the counter until it is on zero minutes and seconds.
+        """
+
+        self._counter_time -= timedelta(seconds=1)
+        self._update_counter()
+
+        if self._counter_time.minute != 0 or self._counter_time.second != 0:
+            self._window.after(1000, self._count_down)
 
 
 ########################################################################################################################
