@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 
 ########################################################################################################################
+
 class Pomodoro:
     BG_IMAGE_FILE_NAME = "tomato.png"
     BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), BG_IMAGE_FILE_NAME)
@@ -13,11 +14,36 @@ class Pomodoro:
     YELLOW = "#f7f5dd"
     COUNTER_FONT = ("Courier", 27, "bold")
     INFO_FONT = ("Courier", 40, "bold")
+    WINDOW_PAD_X = 100
+    WINDOW_PAD_Y = 50
+    WORK_PHASE_LABEL = "Work"
+    BREAK_PHASE_LABEL = "Break"
+    LABEL_KEY = "LABEL"
+    TIME_KEY = "TIME"
     WORK_MIN = 25
     SHORT_BREAK_MIN = 5
     LONG_BREAK_MIN = 20
-    WINDOW_PAD_X = 100
-    WINDOW_PAD_Y = 50
+
+    WORK_PHASE = {
+        LABEL_KEY: WORK_PHASE_LABEL,
+        TIME_KEY: WORK_MIN
+    }
+    SHORT_BREAK_PHASE = {
+        LABEL_KEY: BREAK_PHASE_LABEL,
+        TIME_KEY: SHORT_BREAK_MIN
+    }
+    LONG_BREAK_PHASE = {
+        LABEL_KEY: BREAK_PHASE_LABEL,
+        TIME_KEY: LONG_BREAK_MIN
+    }
+    PHASES = (WORK_PHASE,
+              SHORT_BREAK_PHASE,
+              WORK_PHASE,
+              SHORT_BREAK_PHASE,
+              WORK_PHASE,
+              SHORT_BREAK_PHASE,
+              WORK_PHASE,
+              LONG_BREAK_PHASE)
 
 ########################################################################################################################
 
@@ -59,9 +85,9 @@ class Pomodoro:
                                                        fill="white", font=self.COUNTER_FONT)
         self._canvas.grid(row=1, column=1)
 
-        self._info_label = Label(text="Timer", fg=self.GREEN, bg=self.YELLOW, font=self.INFO_FONT)
+        self._info_label = Label(text="Pomodoro", fg=self.GREEN, bg=self.YELLOW, font=self.INFO_FONT)
         self._info_label.grid(row=0, column=1)
-        self._progress_label = Label(text="\u2714", fg=self.GREEN, bg=self.YELLOW)
+        self._progress_label = Label(fg=self.GREEN, bg=self.YELLOW)
         self._progress_label.grid(row=3, column=1)
 
 ########################################################################################################################
@@ -80,10 +106,12 @@ class Pomodoro:
 
     def _start(self) -> None:
         """
-        Start the counter on work period.
+        Go to the first phase of the pomodoro routine. Start the timer.
         """
 
-        self._set_counter(self.WORK_MIN)
+        self._phase = 0
+        self._update_info()
+        self._set_counter()
 
 ########################################################################################################################
 
@@ -96,15 +124,14 @@ class Pomodoro:
 
 ########################################################################################################################
 
-    def _set_counter(self, minutes: int) -> None:
+    def _set_counter(self) -> None:
         """
         Set the counter to the specified number of minutes. Count down second by second.
-
-        :param minutes: number of minutes to count down second by second
         """
 
-        self._counter_time = datetime.now().replace(minute=minutes, second=0)
+        self._counter_time = datetime.now().replace(minute=0, second=self.PHASES[self._phase][self.TIME_KEY])
         self._update_counter()
+        self._update_info()
         self._window.after(1000, self._count_down)
 
 ########################################################################################################################
@@ -118,6 +145,16 @@ class Pomodoro:
 
 ########################################################################################################################
 
+    def _update_info(self) -> None:
+        """
+        Update the label which displays the name of the current pomodoro phase and the progress label.
+        """
+
+        self._info_label.configure(text=self.PHASES[self._phase][self.LABEL_KEY])
+        self._progress_label.configure(text="\u2714" * self._phase)
+
+########################################################################################################################
+
     def _count_down(self) -> None:
         """
         Subtract one second from the counter until it is on zero minutes and seconds.
@@ -127,7 +164,13 @@ class Pomodoro:
         self._update_counter()
 
         if self._counter_time.minute != 0 or self._counter_time.second != 0:
+            # counter above 00:00, continue
             self._window.after(1000, self._count_down)
+        else:
+            # counter reached 00:00, move to the next phase
+            self._phase += 1
+            self._phase %= len(self.PHASES)
+            self._window.after(1000, self._set_counter)
 
 
 ########################################################################################################################
