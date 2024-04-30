@@ -51,8 +51,15 @@ def run_program() -> None:
     Get a word from the user. Print NATO alphabet codes for each letter of the word.
     """
 
-    word = input("Enter a word: ")
-    nato_alphabet = NatoAlphabet()
-    print(", ".join(nato_alphabet.get_word_codes(word)))
+    while True:
+        try:
+            word = input("Enter a word: ")
+            nato_alphabet = NatoAlphabet()
+            print(", ".join(nato_alphabet.get_word_codes(word)))
+            break
+        except KeyError:
+            # the user typed in a character that is not a part of the NATO alphabet
+            print("Sorry, only letters in the alphabet please.")
+
 
 ########################################################################################################################
