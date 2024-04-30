@@ -1,7 +1,7 @@
 from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END, messagebox
 from os.path import join, dirname, realpath
 from random import randint
-from pyperclip import copy
+from pyperclip import copy, PyperclipException
 from json import load, dump
 
 from utils import generate_password
@@ -106,7 +106,15 @@ class PasswordManager:
                                      numbers_count=randint(2, 4),
                                      symbols_count=randint(2, 4))
         self._password_entry.insert(0, password)
-        copy(password)
+
+        try:
+            # copy the password to clipboard
+            copy(password)
+        except PyperclipException:
+            # Pyperclip could not find a copy/paste mechanism for your system.
+            # For more information, please visit
+            # https://pyperclip.readthedocs.io/en/latest/index.html#not-implemented-error
+            pass
 
 ########################################################################################################################
 
