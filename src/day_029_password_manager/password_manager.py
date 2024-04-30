@@ -2,6 +2,7 @@ from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END, messagebo
 from os.path import join, dirname, realpath
 from random import randint
 from pyperclip import copy
+from json import load, dump
 
 from utils import generate_password
 
@@ -10,10 +11,12 @@ from utils import generate_password
 
 class PasswordManager:
     _BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "logo.png")
-    _OUT_FILE_PATH = join(dirname(realpath(__file__)), "data.txt")
+    _OUT_FILE_PATH = join(dirname(realpath(__file__)), "data.json")
     _WINDOW_PADDING = 50
     _LOGO_WIDTH = 200
     _LOGO_HEIGHT = 200
+    _USERNAME_KEY = "USERNAME"
+    _PASSWORD_KEY = "PASSWORD"
 
 ########################################################################################################################
 
@@ -24,6 +27,7 @@ class PasswordManager:
 
         self._set_display()
         self._set_controls()
+        self._load_data()
         self._window.mainloop()
 
 ########################################################################################################################
@@ -70,6 +74,19 @@ class PasswordManager:
 
 ########################################################################################################################
 
+    def _load_data(self) -> None:
+        """
+        Load password database from the data file.
+        """
+
+        try:
+            with open(self._OUT_FILE_PATH, "r") as f:
+                self._data = load(f)
+        except FileNotFoundError:
+            self._data = dict()
+
+########################################################################################################################
+
     def _search(self) -> None:
         """
 
@@ -104,13 +121,20 @@ class PasswordManager:
                 len(self._password_entry.get()) == 0):
             messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
         else:
-            output_line = f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n"
-            is_ok = messagebox.askyesno(title=self._website_entry.get(), message=f"These are the details entered: \n"
-                                                                                 f"{output_line}\n"
-                                                                                 f"Is it ok to save?")
+            is_ok = messagebox.askyesno(
+                title=self._website_entry.get(),
+                message=f"These are the details entered: \n"
+                        f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n"
+                        f"Is it ok to save?")
             if is_ok:
-                with open(self._OUT_FILE_PATH, "a") as f:
-                    f.write(output_line)
+                self._data.update({
+                    self._website_entry.get(): {
+                        self._USERNAME_KEY: self._username_entry.get(),
+                        self._PASSWORD_KEY: self._password_entry.get()
+                    }
+                })
+                with open(self._OUT_FILE_PATH, "w") as f:
+                    dump(self._data, f, indent=4)
 
                 self._website_entry.delete(0, END)
                 self._password_entry.delete(0, END)
