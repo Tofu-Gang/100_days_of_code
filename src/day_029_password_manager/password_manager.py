@@ -1,6 +1,8 @@
 from tkinter import Tk, PhotoImage, Canvas, Label, Entry, Button, END, messagebox
 from os.path import join, dirname, realpath
 from random import randint
+from typing import Union
+
 from pyperclip import copy, PyperclipException
 from json import load, dump
 
@@ -9,14 +11,90 @@ from utils import generate_password
 
 ########################################################################################################################
 
+class Database:
+    _OUT_FILE_PATH = join(dirname(realpath(__file__)), "data.json")
+    _USERNAME_KEY = "USERNAME"
+    _PASSWORD_KEY = "PASSWORD"
+
+########################################################################################################################
+
+    def __init__(self):
+        """
+        Load password database from the data file.
+        """
+
+        try:
+            with open(self._OUT_FILE_PATH, "r") as f:
+                self._data = load(f)
+        except FileNotFoundError:
+            # no data file exists; create empty dictionary
+            self._data = dict()
+
+########################################################################################################################
+
+    def add_data(self, website: str, username: str, password: str) -> None:
+        """
+        Add data to the database and save it to the data file.
+
+        :param website: website name
+        :param username: username/email
+        :param password: password
+        """
+
+        self._data.update({
+            website: {
+                self._USERNAME_KEY: username,
+                self._PASSWORD_KEY: password
+            }
+        })
+
+        with open(self._OUT_FILE_PATH, "w") as f:
+            dump(self._data, f, indent=4)
+
+########################################################################################################################
+
+    def data_exist(self, website: str) -> bool:
+        """
+        :param website: website name
+        :return: True if data for the specified website exist, False otherwise
+        """
+
+        return website in self._data
+
+########################################################################################################################
+
+    def get_username(self, website: str) -> Union[str, None]:
+        """
+        :param website: website name
+        :return: username for the website or None if the data do not exist
+        """
+
+        try:
+            return self._data[website][self._USERNAME_KEY]
+        except KeyError:
+            return None
+
+########################################################################################################################
+
+    def get_password(self, website: str) -> Union[str, None]:
+        """
+        :param website: website name
+        :return: password for the website or None if the data do not exist
+        """
+
+        try:
+            return self._data[website][self._PASSWORD_KEY]
+        except KeyError:
+            return None
+
+
+########################################################################################################################
+
 class PasswordManager:
     _BG_IMAGE_FILE_PATH = join(dirname(realpath(__file__)), "logo.png")
-    _OUT_FILE_PATH = join(dirname(realpath(__file__)), "data.json")
     _WINDOW_PADDING = 50
     _LOGO_WIDTH = 200
     _LOGO_HEIGHT = 200
-    _USERNAME_KEY = "USERNAME"
-    _PASSWORD_KEY = "PASSWORD"
 
 ########################################################################################################################
 
@@ -27,7 +105,7 @@ class PasswordManager:
 
         self._set_display()
         self._set_controls()
-        self._load_data()
+        self._database = Database()
         self._window.mainloop()
 
 ########################################################################################################################
@@ -74,25 +152,22 @@ class PasswordManager:
 
 ########################################################################################################################
 
-    def _load_data(self) -> None:
-        """
-        Load password database from the data file.
-        """
-
-        try:
-            with open(self._OUT_FILE_PATH, "r") as f:
-                self._data = load(f)
-        except FileNotFoundError:
-            self._data = dict()
-
-########################################################################################################################
-
     def _search(self) -> None:
         """
-
+        Search the database for data from specified website. Show it in a messagebox if it exists, or tell the user
+        via a messagebox that the data for this website do not exist.
         """
 
-        pass
+        website = self._website_entry.get()
+
+        if len(website) == 0:
+            messagebox.showinfo(title="Oops", message="Website field is empty!")
+        elif self._database.data_exist(website):
+            username = self._database.get_username(website)
+            password = self._database.get_password(website)
+            messagebox.showinfo(title=website, message=f"Data found:\nUsername: {username}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Oops", message=f"No data found for {website}.")
 
 ########################################################################################################################
 
@@ -124,26 +199,33 @@ class PasswordManager:
         If all is ok, save the password entry to the output file and prepare the window for the next password.
         """
 
-        if (len(self._website_entry.get()) == 0 or
-                len(self._username_entry.get()) == 0 or
-                len(self._password_entry.get()) == 0):
+        website = self._website_entry.get()
+        username = self._username_entry.get()
+        password = self._password_entry.get()
+
+        if len(website) == 0 or len(username) == 0 or len(password) == 0:
             messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
         else:
-            is_ok = messagebox.askyesno(
-                title=self._website_entry.get(),
-                message=f"These are the details entered: \n"
-                        f"{self._website_entry.get()} | {self._username_entry.get()} | {self._password_entry.get()}\n"
-                        f"Is it ok to save?")
+            if self._database.data_exist(website):
+                is_ok = messagebox.askyesno(
+                    title=website,
+                    message=f"Data already exist:\n"
+                            f"Username: {self._database.get_username(website)}\n"
+                            f"Password: {self._database.get_password(website)}\n"
+                            f"New data:\n"
+                            f"Username: {username}\n"
+                            f"Password: {password}\n"
+                            f"Overwrite?")
+            else:
+                is_ok = messagebox.askyesno(
+                    title=website,
+                    message=f"These are the details entered:\n"
+                            f"{website}\n"
+                            f"Username: {username}\n"
+                            f"Password: {password}\n"
+                            f"Is it ok to save?")
             if is_ok:
-                self._data.update({
-                    self._website_entry.get(): {
-                        self._USERNAME_KEY: self._username_entry.get(),
-                        self._PASSWORD_KEY: self._password_entry.get()
-                    }
-                })
-                with open(self._OUT_FILE_PATH, "w") as f:
-                    dump(self._data, f, indent=4)
-
+                self._database.add_data(website, username, password)
                 self._website_entry.delete(0, END)
                 self._password_entry.delete(0, END)
                 self._website_entry.focus()
