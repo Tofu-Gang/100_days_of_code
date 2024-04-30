@@ -57,15 +57,25 @@ class PasswordManager:
         """
 
         self._website_entry = Entry()
-        self._website_entry.grid(row=1, column=1, columnspan=2, sticky="EW")
+        self._website_entry.grid(row=1, column=1, sticky="EW")
         self._website_entry.focus()
         self._username_entry = Entry()
         self._username_entry.grid(row=2, column=1, columnspan=2, sticky="EW")
         self._username_entry.insert(0, "borts@bootus.com")
         self._password_entry = Entry()
         self._password_entry.grid(row=3, column=1, sticky="EW")
+        Button(text="Search", command=self._search).grid(row=1, column=2, sticky="EW")
         Button(text="Generate Password", command=self._generate_password).grid(row=3, column=2)
         Button(text="Add", command=self._add_password).grid(row=4, column=1, columnspan=2, sticky="EW")
+
+########################################################################################################################
+
+    def _search(self) -> None:
+        """
+
+        """
+
+        pass
 
 ########################################################################################################################
 
