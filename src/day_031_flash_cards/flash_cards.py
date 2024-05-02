@@ -1,6 +1,8 @@
 from tkinter import Tk, PhotoImage, Canvas, Label, Button
 from os.path import join, dirname, realpath
 
+from .words_engine import WordsEngine, Word
+
 
 ########################################################################################################################
 
@@ -16,11 +18,14 @@ class FlashCards:
 
     def __init__(self):
         """
-        Create the window, set up all the widgets, geometry, images and colors. Show the window.
+        Create the window, set up all the widgets, geometry, images and colors. Start the learning session and show the
+        window.
         """
 
         self._set_display()
         self._set_controls()
+        self._words_engine = WordsEngine()
+        self._start_learning()
         self._window.mainloop()
 
 ########################################################################################################################
@@ -44,10 +49,10 @@ class FlashCards:
         self._canvas.create_image(width / 2, height / 2, image=self._card_front_img)
         self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2)
 
-        self._lang_label = Label(text="French", bg="#FFFFFF", font=("Arial", 40, "italic"))
+        self._lang_label = Label(bg="#FFFFFF", font=("Arial", 40, "italic"))
         self._lang_label.grid(row=0, column=0, columnspan=2)
 
-        self._word_label = Label(text="trouve", bg="#FFFFFF", font=("Arial", 60, "bold"))
+        self._word_label = Label(bg="#FFFFFF", font=("Arial", 60, "bold"))
         self._word_label.grid(row=1, column=0, columnspan=2, sticky="N")
 
 ########################################################################################################################
@@ -66,12 +71,33 @@ class FlashCards:
 
 ########################################################################################################################
 
-    def _right(self) -> None:
+    def _start_learning(self) -> None:
         """
-        
+        Start the learning session.
         """
 
-        print("right")
+        self._show_word(self._words_engine.get_random_word())
+
+########################################################################################################################
+
+    def _show_word(self, word: Word) -> None:
+        """
+        Show the param word in the window.
+
+        :param word: word to show in the window
+        """
+
+        self._lang_label.configure(text=self._words_engine.original_lang)
+        self._word_label.configure(text=word.original)
+
+########################################################################################################################
+
+    def _right(self) -> None:
+        """
+
+        """
+
+        self._show_word(self._words_engine.get_random_word())
 
 ########################################################################################################################
 
@@ -80,7 +106,7 @@ class FlashCards:
 
         """
 
-        print("wrong")
+        self._show_word(self._words_engine.get_random_word())
 
 
 ########################################################################################################################
