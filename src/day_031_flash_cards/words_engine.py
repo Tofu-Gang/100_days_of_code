@@ -1,6 +1,5 @@
 from os.path import join, dirname, realpath
 from random import choice
-
 from pandas import read_csv
 
 
