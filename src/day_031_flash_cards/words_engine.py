@@ -1,6 +1,6 @@
 from os.path import join, dirname, realpath
 from random import choice
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 
 
 ########################################################################################################################
@@ -42,7 +42,8 @@ class Word:
 ########################################################################################################################
 
 class WordsEngine:
-    _WORDS_FILE_PATH = join(dirname(realpath(__file__)), "data", "words.csv")
+    _WORDS_ORIGINAL_FILE_PATH = join(dirname(realpath(__file__)), "data", "words.csv")
+    _WORDS_FILE_PATH = join(dirname(realpath(__file__)), "data", "words_to_learn.csv")
 
 ########################################################################################################################
 
@@ -51,11 +52,17 @@ class WordsEngine:
         Load words from a data file and transform it so the database can be easily used by the GUI.
         """
 
-        frame = read_csv(self._WORDS_FILE_PATH)
+        try:
+            # load only the words the user still needs to learn
+            frame = read_csv(self._WORDS_FILE_PATH)
+        except FileNotFoundError:
+            # if that file does not exist, load all words
+            frame = read_csv(self._WORDS_ORIGINAL_FILE_PATH)
+
         self._original_lang = frame.columns[0]
         self._translation_lang = frame.columns[1]
-        self._words = tuple(Word(entry[self._original_lang], entry[self._translation_lang])
-                            for entry in frame.to_dict(orient="records"))
+        self._words = list(Word(entry[self._original_lang], entry[self._translation_lang])
+                           for entry in frame.to_dict(orient="records"))
 
 ########################################################################################################################
 
@@ -85,5 +92,28 @@ class WordsEngine:
         """
 
         return choice(self._words)
+
+########################################################################################################################
+
+    def remove_word(self, word: Word) -> None:
+        """
+        Remove a word from the database. This means that the user knows the word and no longer needs to learn it.
+
+        :param word: Word to be removed from the database
+        """
+
+        self._words.remove(word)
+
+########################################################################################################################
+
+    def save_words(self) -> None:
+        """
+        Save the words that the user still needs to learn to a file.
+        """
+
+        DataFrame({
+            self._original_lang: list(word.original for word in self._words),
+            self._translation_lang: list(word.translation for word in self._words)
+        }).to_csv(self._WORDS_FILE_PATH, index=False)
 
 ########################################################################################################################

@@ -41,6 +41,7 @@ class FlashCards:
         self._window = Tk()
         self._window.title("Flashy")
         self._window.configure(padx=self._WINDOW_PADDING, pady=self._WINDOW_PADDING, bg=self._WINDOW_BG_COLOR)
+        self._window.protocol("WM_DELETE_WINDOW", self._on_closing)
 
         self._card_front_img = PhotoImage(file=self._CARD_FRONT_IMG_PATH)
         self._card_back_img = PhotoImage(file=self._CARD_BACK_IMG_PATH)
@@ -128,26 +129,37 @@ class FlashCards:
 
     def _right(self) -> None:
         """
-
+        The user knows the current word, remove it from the database. Show another word.
         """
 
+        self._words_engine.remove_word(self._word)
         self._next_word()
 
 ########################################################################################################################
 
     def _wrong(self) -> None:
         """
-
+        The user did not know the current word, show another one.
         """
 
         self._next_word()
+
+########################################################################################################################
+
+    def _on_closing(self) -> None:
+        """
+        Save the words that the user still needs to learn to a file before closing the window.
+        """
+
+        self._words_engine.save_words()
+        self._window.destroy()
 
 
 ########################################################################################################################
 
 def run_program() -> None:
     """
-
+    Run the Flash Cards program.
     """
 
     FlashCards()
