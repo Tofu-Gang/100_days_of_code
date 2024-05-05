@@ -168,3 +168,5 @@ Output/
 states_to_learn.csv
 # day_029 Password Manager
 data.json
+# day_031 Flash Cards
+words_to_learn.csv
