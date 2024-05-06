@@ -27,7 +27,6 @@ class AutomatedBirthdayWisher:
         self._load_password()
         self._load_birthdays()
         self._load_letters()
-        self._today = datetime.now()
 
 ########################################################################################################################
 
@@ -108,18 +107,25 @@ class AutomatedBirthdayWisher:
                                 to_addrs=recipients,
                                 msg=f"Subject:{subject}\n\n{message}")
 
+########################################################################################################################
+
+    def check_birthdays(self) -> None:
+        """
+        Check if today is someone's birthday. If so, send them a random personalized birthday wish to their email.
+        """
+
+        for person in self._birthday_people:
+            if person.month == datetime.now().month and person.day == datetime.now().day:
+                self._send_email("Happy Birthday!", self._personalize_random_letter(person.name), person.email)
+
 
 ########################################################################################################################
 
 def run_program() -> None:
     """
-
+    Run Automated Birthday Wisher.
     """
 
-    # 1. Update the birthdays.csv
-    # 2. Check if today matches a birthday in the birthdays.csv
-    # 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
-    # 4. Send the letter generated in step 3 to that person's email address.
-    AutomatedBirthdayWisher()
+    AutomatedBirthdayWisher().check_birthdays()
 
 ########################################################################################################################
