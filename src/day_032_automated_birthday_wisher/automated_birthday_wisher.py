@@ -2,6 +2,7 @@ from smtplib import SMTP
 from os.path import join, dirname, realpath
 from datetime import datetime
 from pandas import read_csv
+from random import choice
 
 from .birthday_person import BirthdayPerson
 
@@ -11,6 +12,9 @@ from .birthday_person import BirthdayPerson
 class AutomatedBirthdayWisher:
     _PASSWORD_FILE_PATH = join(dirname(realpath(__file__)), "pass.txt")
     _BIRTHDAYS_FILE_PATH = join(dirname(realpath(__file__)), "birthdays.csv")
+    _LETTER_1_FILE_PATH = join(dirname(realpath(__file__)), "letter_templates", "letter_1.txt")
+    _LETTER_2_FILE_PATH = join(dirname(realpath(__file__)), "letter_templates", "letter_2.txt")
+    _LETTER_3_FILE_PATH = join(dirname(realpath(__file__)), "letter_templates", "letter_3.txt")
 
 ########################################################################################################################
 
@@ -22,6 +26,7 @@ class AutomatedBirthdayWisher:
         self._email = ""
         self._load_password()
         self._load_birthdays()
+        self._load_letters()
         self._today = datetime.now()
 
 ########################################################################################################################
@@ -58,6 +63,32 @@ class AutomatedBirthdayWisher:
                                                      month=int(row[month_key]),
                                                      day=int(row[day_key]))
                                       for row in frame.to_dict(orient="records"))
+
+########################################################################################################################
+
+    def _load_letters(self) -> None:
+        """
+        Load birthday wishes templates and store them as a Tuple.
+        """
+
+        self._letters = []
+        with open(self._LETTER_1_FILE_PATH, "r") as f:
+            self._letters.append(f.read().strip())
+        with open(self._LETTER_2_FILE_PATH, "r") as f:
+            self._letters.append(f.read().strip())
+        with open(self._LETTER_3_FILE_PATH, "r") as f:
+            self._letters.append(f.read().strip())
+        self._letters = tuple(self._letters)
+
+########################################################################################################################
+
+    def _personalize_random_letter(self, name: str) -> str:
+        """
+        :param name: birthday person name
+        :return: random personalized birthday wish as a string
+        """
+
+        return choice(self._letters).replace("[NAME]", name)
 
 ########################################################################################################################
 
