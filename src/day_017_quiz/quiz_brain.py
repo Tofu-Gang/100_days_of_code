@@ -19,9 +19,14 @@ class QuizzBrain:
         self._question = None
         self._question_number = 0
         self._score = 0
-        opentdb_questions = loads(get("https://opentdb.com/api.php?amount=20&type=boolean").content)["results"]
+        response = get("https://opentdb.com/api.php", params={
+            "amount": 10,
+            "type": "boolean"
+        })
+        response.raise_for_status()
+
         self._question_bank = list(Question(unescape(question["question"]), eval(question["correct_answer"]))
-                                   for question in opentdb_questions)
+                                   for question in response.json()["results"])
 
 ########################################################################################################################
 
